@@ -122,7 +122,7 @@ int sc_regSet (int regNumber, int value)
 
 int sc_regGet (int regNumber, int* value)
 {
-	if (regNumber > 0 && regNumber <= 5) 
+	if (regNumber > 0 && regNumber <= 5) // from 1 to 5
 	{
 		*value = (flagsRegister >> (regNumber - 1)) & 0x1;
 	}

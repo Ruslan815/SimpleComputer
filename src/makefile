@@ -2,8 +2,8 @@
 
 all: SimpleComputer.exe
 
-SimpleComputer.exe: libdisplayTerm.a libmyReadKey.a libmyBigChars.a libmyTerm.a libmySimpleComputer.a mainFileLABA6.o
-	gcc -Wall -Werror mainFileLABA6.o -L. -ldisplayTerm -lmyReadKey -lmyBigChars -lmyTerm -lmySimpleComputer -o SimpleComputer.exe -lm
+SimpleComputer.exe: libdisplayTerm.a libmyReadKey.a libmyBigChars.a libmyTerm.a libmySimpleComputer.a main.o
+	gcc -Wall -Werror main.o -L. -ldisplayTerm -lmyReadKey -lmyBigChars -lmyTerm -lmySimpleComputer -o SimpleComputer.exe -lm
 
 libmySimpleComputer.a: mySimpleComputer.o
 	ar rc libmySimpleComputer.a mySimpleComputer.o
@@ -40,8 +40,8 @@ myReadKey.o: myReadKey.c
 displayTerm.o: displayTerm.c
 	gcc -Wall -Werror -c displayTerm.c
 
-mainFileLABA6.o: mainFileLABA6.c
-	gcc -Wall -Werror -c mainFileLABA6.c
+main.o: main.c
+	gcc -Wall -Werror -c main.c
 
 clean:
 	rm -rf *.o *.exe

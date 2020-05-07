@@ -104,6 +104,8 @@ int bc_printBigChar(int* arr, int x, int y, enum Colors fgColor, enum Colors bgC
 	return 0;
 }
 
+// is this part used?
+/*
 int bc_setBigCharPos(int* big, int x, int y, int value)
 {
 	if (x < 0 || x > 7 || y < 0 || y > 7 || value < 0 || value > 1)
@@ -203,3 +205,4 @@ int bc_bigCharRead(int fd,int* big,int need_count,int* count)
 
 	return 0;
 }
+*/
