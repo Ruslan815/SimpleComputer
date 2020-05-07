@@ -212,18 +212,18 @@ void displayMemory(void)
 
 		for (j = 0; j < 10; j++)
 		{
-			int value;
+			int value = 0;
 			sc_memoryGet(j + (i * 10), &value);
 
 			if (j + (i * 10) == cursorAddress)
 			{
 				mt_setFgColor(GREEN);
-				printf("+%4d ", value);
+				(value < 0) ? printf("-%4X ", -value) : printf("+%4X ", value); // (value > 16383)
 				mt_setFgColor(WHITE);
 			}
 			else
 			{
-				printf("+%4d ", value);
+				(value < 0) ? printf("-%4X ", -value) : printf("+%4X ", value);
 			}
 			
 		} 
@@ -240,11 +240,11 @@ void displayRegisters(void)
 
 	if (accumulator < 0)
 	{
-		printf("%d", accumulator);
+		printf("-%4X", -accumulator);
 	}
 	else
 	{
-		printf("+%d", accumulator);
+		printf("+%4X", accumulator);
 	}
 
 
@@ -353,11 +353,11 @@ void displayBigNumber(void)
 		bc_printBigChar(bcintp, 14, 2, GREEN, BLACK);
 	}
 		
-	int i;
+	int i; 
 	for (i = 0; i < 4; i++)
 	{
-		int tempNumber = tempMemoryNumber % 10;
-		tempMemoryNumber /= 10;
+		int tempNumber = tempMemoryNumber % 16;
+		tempMemoryNumber /= 16;
 
 		switch(tempNumber)
 		{
@@ -399,6 +399,30 @@ void displayBigNumber(void)
 
 			case 9:
 				bc_printBigChar(bcint9, 14, 36 - (i * 9), GREEN, BLACK);
+				break;
+
+			case 10:
+				bc_printBigChar(bcintA, 14, 36 - (i * 9), GREEN, BLACK);
+				break;
+
+			case 11:
+				bc_printBigChar(bcintB, 14, 36 - (i * 9), GREEN, BLACK);
+				break;
+
+			case 12:
+				bc_printBigChar(bcintC, 14, 36 - (i * 9), GREEN, BLACK);
+				break;
+
+			case 13:
+				bc_printBigChar(bcintD, 14, 36 - (i * 9), GREEN, BLACK);
+				break;
+
+			case 14:
+				bc_printBigChar(bcintE, 14, 36 - (i * 9), GREEN, BLACK);
+				break;
+
+			case 15:
+				bc_printBigChar(bcintF, 14, 36 - (i * 9), GREEN, BLACK);
 				break;
 
 			default:
