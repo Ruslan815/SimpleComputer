@@ -1,9 +1,9 @@
 .PHONY: clean
 
-all: LABA6.exe
+all: SimpleComputer.exe
 
-LABA6.exe: libdisplayTerm.a libmyReadKey.a libmyBigChars.a libmyTerm.a libmySimpleComputer.a mainFileLABA6.o
-	gcc -Wall -Werror mainFileLABA6.o -L. -ldisplayTerm -lmyReadKey -lmyBigChars -lmyTerm -lmySimpleComputer -o LABA6.exe -lm
+SimpleComputer.exe: libdisplayTerm.a libmyReadKey.a libmyBigChars.a libmyTerm.a libmySimpleComputer.a mainFileLABA6.o
+	gcc -Wall -Werror mainFileLABA6.o -L. -ldisplayTerm -lmyReadKey -lmyBigChars -lmyTerm -lmySimpleComputer -o SimpleComputer.exe -lm
 
 libmySimpleComputer.a: mySimpleComputer.o
 	ar rc libmySimpleComputer.a mySimpleComputer.o
@@ -44,4 +44,4 @@ mainFileLABA6.o: mainFileLABA6.c
 	gcc -Wall -Werror -c mainFileLABA6.c
 
 clean:
-	rm -rf *.o *.a *.exe
+	rm -rf *.o *.exe
