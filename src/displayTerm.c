@@ -32,7 +32,7 @@ void runTerm(void)
 	x = 2;
 	y = 3;
 	cursorAddress = 0;
-	mt_gotoXY(x, y);
+	mt_gotoYX(x, y);
 
 	rk_myTermRegime(0, 15, 0, 1, 1);
 
@@ -164,7 +164,7 @@ void runTerm(void)
 		}
 
 		mt_clearScreen();
-		
+		IOvar[0] = '\0';
 		displayTerm();
 	}
 }
@@ -203,13 +203,13 @@ void displayMemory(void)
 {
 	bc_box(1, 1, 12, 62);
 
-	mt_gotoXY(1, 30);
+	mt_gotoYX(1, 30);
 	printf("Memory");
 
 	int i, j;
 	for (i = 0; i < 10; i++)
 	{
-		mt_gotoXY(2 + i, 2);
+		mt_gotoYX(2 + i, 2);
 
 		for (j = 0; j < 10; j++)
 		{
@@ -235,9 +235,9 @@ void displayMemory(void)
 void displayRegisters(void)
 {
 	bc_box(1, 64, 3, 20);
-	mt_gotoXY(1, 69);
+	mt_gotoYX(1, 69);
 	printf("Accumulator");
-	mt_gotoXY(2, 71); 
+	mt_gotoYX(2, 71); 
 
 	if (accumulator < 0)
 	{
@@ -250,9 +250,9 @@ void displayRegisters(void)
 
 
 	bc_box(4, 64, 3, 20);
-	mt_gotoXY(4, 65);
+	mt_gotoYX(4, 65);
 	printf("InstructionCounter");
-	mt_gotoXY(5, 71); 
+	mt_gotoYX(5, 71); 
 
     if (instructionCounter < 0 || instructionCounter > 99)
     {
@@ -262,9 +262,9 @@ void displayRegisters(void)
 	printf("+%d", instructionCounter);
 
 	bc_box(7, 64, 3, 20);
-	mt_gotoXY(7, 70);
+	mt_gotoYX(7, 70);
 	printf("Operation");
-	mt_gotoXY(8, 71); 
+	mt_gotoYX(8, 71); 
 
 	int value = 0;
 	sc_memoryGet(instructionCounter, &value);
@@ -281,9 +281,9 @@ void displayRegisters(void)
 	}
 
 	bc_box(10, 64, 3, 20);
-	mt_gotoXY(10, 72);
+	mt_gotoYX(10, 72);
 	printf("Flags");
-	mt_gotoXY(11, 70); 
+	mt_gotoYX(11, 70); 
 
 	int i;
 	for (i = 1; i <= 5; i++)
@@ -330,25 +330,25 @@ void displayRegisters(void)
 void displayKeys(void)
 {
 	bc_box(13, 45, 9, 39);
-	mt_gotoXY(13, 47);
+	mt_gotoYX(13, 47);
 
 	printf("Keys:");
-	mt_gotoXY(14, 46);
+	mt_gotoYX(14, 46);
 	printf("l  - load");
-	mt_gotoXY(15, 46);
+	mt_gotoYX(15, 46);
 	printf("s  - save");
-	mt_gotoXY(16, 46);
+	mt_gotoYX(16, 46);
 	printf("r  - run");
-	mt_gotoXY(17, 46);
+	mt_gotoYX(17, 46);
 	printf("t  - step");
-	mt_gotoXY(18, 46);
+	mt_gotoYX(18, 46);
 	printf("i  - reset");
-	mt_gotoXY(19, 46);
+	mt_gotoYX(19, 46);
 	printf("F5 - accumulator");
-	mt_gotoXY(20, 46);
+	mt_gotoYX(20, 46);
 	printf("F6 - instructionCounter");
 
-	mt_gotoXY(14, 36);
+	mt_gotoYX(14, 36);
 }
 
 void displayBigNumber(void)
@@ -447,7 +447,7 @@ void displayBigNumber(void)
 	}
 
 	bc_box(13, 1, 10, 44);
-	mt_gotoXY(26, 1);
+	mt_gotoYX(23, 1);
 }
 
 void displayTerm(void)
@@ -474,14 +474,11 @@ void displayTerm(void)
 	}
 
 	mt_clearScreen();
-
 	displayMemory();
-
 	displayRegisters();	
-	
 	displayKeys();
-
 	displayBigNumber();
+	displayIO();
 }
 
 void moveCursor(int* x, int* y, int *cursorAddress, int pressedKey)
@@ -494,7 +491,7 @@ void moveCursor(int* x, int* y, int *cursorAddress, int pressedKey)
 			{
 				*y -= 1;
 				*cursorAddress -= 10;
-				mt_gotoXY(*x, *y);
+				mt_gotoYX(*x, *y);
 			}
 			break;
 
@@ -504,7 +501,7 @@ void moveCursor(int* x, int* y, int *cursorAddress, int pressedKey)
 			{
 				*y += 1;
 				*cursorAddress += 10;
-				mt_gotoXY(*x, *y);
+				mt_gotoYX(*x, *y);
 			}
 			break;
 
@@ -514,7 +511,7 @@ void moveCursor(int* x, int* y, int *cursorAddress, int pressedKey)
 			{
 				*x -= 6;
 				*cursorAddress -= 1;
-				mt_gotoXY(*x, *y);
+				mt_gotoYX(*x, *y);
 			}
 			break;
 
@@ -524,8 +521,14 @@ void moveCursor(int* x, int* y, int *cursorAddress, int pressedKey)
 			{
 				*x += 6;
 				*cursorAddress += 1;
-				mt_gotoXY(*x, *y);
+				mt_gotoYX(*x, *y);
 			}
 			break;
 	}
+}
+
+void displayIO()
+{
+	printf("Input/Output:\n");
+	printf("%s\n",IOvar);
 }
