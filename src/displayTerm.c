@@ -18,13 +18,12 @@ int bcintE [2] = {2114092544, 8258050};
 int bcintF [2] = {33717760, 131646};
 int bcintp [2] = {2115508224, 1579134};
 int bcintm [2] = {2113929216, 126};
-
+char IOvar[80] = "\0";
 void runTerm(void)
 {
 	sc_regInit();
 	instructionCounter = 0;
 	accumulator = 0;
-
 	enum keys pressedKey = key_Default;
 
 	displayTerm();
@@ -43,6 +42,8 @@ void runTerm(void)
 
 	while (pressedKey != key_q)
 	{
+		
+
 		rk_readKey(&pressedKey);
 				
 		if (timer == 1 && (pressedKey < 10 || pressedKey > 13))
@@ -53,120 +54,117 @@ void runTerm(void)
 			}
 		}
 
+		
 		char buffer[8] = "\0";
 		int tempValue;	
 		char tempNum[10] = "\0";
 		int value = 0;		
 
-		switch(pressedKey)
+		if (pressedKey >= 0 && pressedKey <= 9)
 		{
-			case 0:
-			case 1:
-			case 2:
-			case 3:
-			case 4:
-			case 5:
-			case 6:
-			case 7:
-			case 8:
-			case 9:
+			tempNum[0] = pressedKey + 48;
 
-				tempNum[0] = pressedKey + 48;
+			rk_myTermRegime(1, 0, 0, 0, 0);			
 
-				rk_myTermRegime(1, 0, 0, 0, 0);			
+			read(0, &buffer, 3);
 
-				read(0, &buffer, 3);
-
-				strcat(tempNum, buffer);
+			strcat(tempNum, buffer);
 				
-				tempValue = atoi(tempNum);
+			tempValue = atoi(tempNum);
 
-				sc_memorySet(cursorAddress, tempValue);
+			sc_memorySet(cursorAddress, tempValue);
 
-				rk_myTermRegime(0, 15, 0, 1, 1);
-
-				break;
+			rk_myTermRegime(0, 15, 0, 1, 1);
+		}
+		else if (pressedKey == 10)
+		{
+			moveCursor(&x, &y, &cursorAddress, key_Up);
+		}
+		else if (pressedKey == 11)
+		{
+			moveCursor(&x, &y, &cursorAddress, key_Down);
+		}
+		else if (pressedKey == 12)
+		{
+			moveCursor(&x, &y, &cursorAddress, key_Left);
+		}
+		else if (pressedKey == 13)
+		{
+			moveCursor(&x, &y, &cursorAddress, key_Right);
+		}
+		else if (pressedKey == 14)
+		{
+			write(1, "|Enter the Filename to load RAM (10 symbols): ", 45);
+				
+			char IOtemp[10];
 			
-			case 10:
-				moveCursor(&x, &y, &cursorAddress, key_Up);
-				break;
+			rk_myTermRegime(1, 0, 0, 0, 0);
+			read(0, IOtemp, 10);
+			sc_memoryLoad(IOtemp);
+			rk_myTermRegime(0, 15, 0, 1, 1);
+		}
+		else if (pressedKey == 15)
+		{			
+			write(1, "|Enter the Filename to save RAM (10 symbols): ", 45);
+			
+			char IOtemp[10];
+		
+			rk_myTermRegime(1, 0, 0, 0, 0);
+			read(0, IOtemp, 10);
 
-			case 11:
-				moveCursor(&x, &y, &cursorAddress, key_Down);			
-				break;
+			char str[strlen(IOtemp) + 1];
+			int e = 0;
+			for (; e < 10; e++)
+			{
+				str[e] = IOtemp[e];
+			}
+			str[10] = '\0';
 
-			case 12:
-				moveCursor(&x, &y, &cursorAddress, key_Left);
-				break;
+			sc_memorySave(str);
+			rk_myTermRegime(0, 15, 0, 1, 1);
+			
+		}
+		else if (pressedKey == 16)
+		{
+			sc_regGet(4, &value);
 
-			case 13:
-				moveCursor(&x, &y, &cursorAddress, key_Right);
-				break;
-
-			case 14:
-				sc_memoryLoad("SC_RAM.dat");
-				break;
-
-			case 15:
-				sc_memorySave("SC_RAM.dat");
-				break;
-
-			case 16:
-			/*	beginVal.it_value.tv_sec = 1;
-				beginVal.it_value.tv_usec = 500;
-				beginVal.it_interval.tv_sec = 1;
-				beginVal.it_interval.tv_usec = 500;
-				setitimer (ITIMER_REAL, &beginVal, &endVal);*/
-				sc_regGet(4, &value);
-
-				if (value == 0)
-				{
-					timer = 1;
-				}
-				break;
-
-			case 17:
-				if (instructionCounter < 99 && timer == 0)
-				{
-					instructionCounter++;
-				}
-				break;
-
-			case 18:
-			/*	beginVal.it_value.tv_sec = 0;
-				beginVal.it_value.tv_usec = 0;
-				beginVal.it_interval.tv_sec = 0;
-				beginVal.it_interval.tv_usec = 0;
-				setitimer (ITIMER_REAL, &beginVal, &endVal);*/
-				timer = 0;
-				raise(SIGUSR1);
-				break;
-
-			case 19:
-				rk_myTermRegime(1, 0, 0, 0, 0);
-				read(0, &buffer, 4);
-				accumulator = atoi(buffer);
-				rk_myTermRegime(0, 15, 0, 1, 1);
-				break;
-
-			case 20:
-				rk_myTermRegime(1, 0, 0, 0, 0);
-				read(0, &buffer, 2);
-				instructionCounter = atoi(buffer);
-				rk_myTermRegime(0, 15, 0, 1, 1);
-				break;
-
-			case 21:
-				break;
-
-			default:
-				break;
+			if (value == 0)
+			{
+				timer = 1;
+			}
+		}
+		else if (pressedKey == 17)
+		{
+			if (instructionCounter < 99 && timer == 0)
+			{
+				instructionCounter++;
+			}
+		}
+		else if (pressedKey == 18)
+		{
+			timer = 0;
+			raise(SIGUSR1);
+		}
+		else if (pressedKey == 19)
+		{
+			rk_myTermRegime(1, 0, 0, 0, 0);
+			read(0, &buffer, 4);
+			accumulator = atoi(buffer);
+			rk_myTermRegime(0, 15, 0, 1, 1);
+		}
+		else if (pressedKey == 20)
+		{
+			rk_myTermRegime(1, 0, 0, 0, 0);
+			read(0, &buffer, 2);
+			instructionCounter = atoi(buffer);
+			rk_myTermRegime(0, 15, 0, 1, 1);
 		}
 
 		mt_clearScreen();
-		IOvar[0] = '\0';
+	
 		displayTerm();
 	}
+	
 }
 
 void sigHandler(int sigNum)

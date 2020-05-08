@@ -7,6 +7,9 @@
 #include <math.h>
 #include <signal.h>
 #include <sys/time.h>
+#include <string.h>
+#include <stdio.h>
+#include <sys/ioctl.h>
 #include "myBigChars.h"
 #include "mySimpleComputer.h"
 #include "myReadKey.h"
@@ -35,7 +38,7 @@ extern short int instructionCounter;
 int x;
 int y;
 int cursorAddress;
-char IOvar[80];
+//char IOvar[80];
 
 void runTerm(void);
 void sigHandler(int sigNum);
