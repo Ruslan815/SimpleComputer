@@ -52,6 +52,13 @@ void runTerm(void)
 			}
 		}
 		
+		if (timer == 1 && pressedKey != key_i)
+		{
+			mt_clearScreen();
+			displayTerm();
+			continue;
+		}				
+
 		char buffer[8] = "\0";
 		int tempValue;	
 		char tempNum[10] = "\0";
