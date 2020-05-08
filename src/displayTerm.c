@@ -297,11 +297,11 @@ void displayRegisters(void)
 			switch(i)
 			{
 				case 1:
-					printf("O ");
+					printf("P ");
 					break;
 
 				case 2:
-					printf("Z ");
+					printf("0 ");
 					break;
 
 				case 3:
@@ -309,11 +309,11 @@ void displayRegisters(void)
 					break;
 
 				case 4: 
-					printf("P ");
+					printf("T ");
 					break;
 
 				case 5:
-					printf("C ");
+					printf("E ");
 					break;
 
 			}
