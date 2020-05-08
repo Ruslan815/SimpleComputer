@@ -264,7 +264,20 @@ void displayRegisters(void)
 	mt_gotoXY(7, 70);
 	printf("Operation");
 	mt_gotoXY(8, 71); 
-	printf("+%d : %d", 0, 0); // !!!
+
+	int value = 0;
+	sc_memoryGet(instructionCounter, &value);
+
+	int command, operand;
+
+	if (sc_commandDecode(value, &command, &operand) == 0) // if decoded
+	{
+		printf("+%X : %X", command, operand);
+	}
+	else
+	{
+		printf("+%d : %d", 0, 0);
+	}
 
 	bc_box(10, 64, 3, 20);
 	mt_gotoXY(10, 72);
