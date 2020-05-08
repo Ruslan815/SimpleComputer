@@ -163,7 +163,7 @@ int sc_commandEncode (int command, int operand, int* value)
 	}
 	else 
 	{
-		printf("Error: Wrong command or operand!\n");
+	//	printf("Error: Wrong command or operand!\n");
 		
 		return -1;
 	}
@@ -193,7 +193,7 @@ int sc_commandDecode (int value, int* command, int* operand)
 		
 		if (isCommand == 0)
 		{
-			printf("Error: Wrong command!\n");
+		//	printf("Error: Wrong command!\n");
 			flagsRegister = flagsRegister | (1 << (WRONG_COMMAND - 1));
 			
 			return -1;
@@ -210,7 +210,7 @@ int sc_commandDecode (int value, int* command, int* operand)
 	}
 	else 
 	{
-		printf("Error: Not a Simple Computer command!\n");
+	//	printf("Error: Not a Simple Computer command!\n");
 		flagsRegister = flagsRegister | (1 << (WRONG_COMMAND - 1));
 		
 		return -1;
