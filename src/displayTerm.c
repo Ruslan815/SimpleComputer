@@ -181,9 +181,10 @@ void sigHandler(int sigNum)
 			if (value == 0)
 			{
 				sc_regInit();
+				sc_memoryInit();
 				instructionCounter = 0;
 				accumulator = 0;
-				sc_regSet(4, 1); 
+				sc_regSet(IGNORING_PULSES, 1); 
 			}
 			break;
 
