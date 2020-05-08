@@ -35,6 +35,7 @@ extern short int instructionCounter;
 int x;
 int y;
 int cursorAddress;
+char IOvar[80];
 
 void runTerm(void);
 void sigHandler(int sigNum);
@@ -44,5 +45,6 @@ void displayKeys(void);
 void displayBigNumber(void);
 void displayTerm(void);
 void moveCursor(int* x, int* y, int *cursorAddress, int pressedKey);
+void displayIO(); 
 
 #endif

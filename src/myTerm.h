@@ -20,7 +20,7 @@ enum Colors
 };
 
 int mt_clearScreen(void);
-int mt_gotoXY(int X, int Y);
+int mt_gotoYX(int X, int Y);
 int mt_getScreenSize(int* rows, int* cols);
 int mt_setFgColor(enum Colors fgColor);
 int mt_setBgColor(enum Colors bgColor);

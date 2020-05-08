@@ -7,7 +7,7 @@ int mt_clearScreen(void)
 	return 0;
 }
 
-int mt_gotoXY(int X, int Y)
+int mt_gotoYX(int X, int Y)
 {
 	if (X < 0 || Y < 0)
 	{

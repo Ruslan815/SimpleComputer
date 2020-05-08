@@ -15,7 +15,7 @@ int bc_box(int x, int y, int rows, int columns)
 		return -1;
 	}
 
-	mt_gotoXY(x, y);
+	mt_gotoYX(x, y);
 	printf("\E(0l");
 
 	int i;
@@ -58,7 +58,7 @@ int bc_printBigChar(int* arr, int x, int y, enum Colors fgColor, enum Colors bgC
 	int i;
 	for (i = 0; i < 4; i++)
 	{	
-		mt_gotoXY(x + i, y);
+		mt_gotoYX(x + i, y);
 
 		int j;
 		for (j = 0; j < 8; j++)
@@ -79,7 +79,7 @@ int bc_printBigChar(int* arr, int x, int y, enum Colors fgColor, enum Colors bgC
 	int coorX = 4;
 	for (i = 0; i < 4; i++)
 	{	
-		mt_gotoXY(x + coorX++, y);
+		mt_gotoYX(x + coorX++, y);
 
 		int j;
 		for (j = 0; j < 8; j++)
