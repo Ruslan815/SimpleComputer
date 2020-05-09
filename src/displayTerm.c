@@ -42,6 +42,7 @@ void runTerm(void)
 
 	while (pressedKey != key_q)
 	{
+		rk_myTermRegime(0, 15, 0, 1, 1);
 		rk_readKey(&pressedKey);
 				
 		if (timer == 1 && (pressedKey < 10 || pressedKey > 13))
@@ -98,35 +99,37 @@ void runTerm(void)
 		}
 		else if (pressedKey == 14)
 		{
-			write(1, "|Enter the Filename to load RAM (10 symbols): ", 45);
+			write(1, "|Enter the Filename to load RAM: ", 32);
 				
-			char IOtemp[10];
-			
+			char IOtemp[25];
+
 			rk_myTermRegime(1, 0, 0, 0, 0);
-			read(0, IOtemp, 10);
+			fflush(stdout);
+			fflush(stdin);
+
+			scanf("%s", IOtemp);
 			sc_memoryLoad(IOtemp);
+
+			fflush(stdout);
+			fflush(stdin);
 			rk_myTermRegime(0, 15, 0, 1, 1);
 		}
 		else if (pressedKey == 15)
 		{			
-			write(1, "|Enter the Filename to save RAM (10 symbols): ", 45);
+			write(1, "|Enter the Filename to save RAM: ", 32);
 			
-			char IOtemp[10];
+			char IOtemp[25];
 		
 			rk_myTermRegime(1, 0, 0, 0, 0);
-			read(0, IOtemp, 10);
+			fflush(stdout);
+			fflush(stdin);
 
-			char str[strlen(IOtemp) + 1];
-			int e = 0;
-			for (; e < 10; e++)
-			{
-				str[e] = IOtemp[e];
-			}
-			str[10] = '\0';
+			scanf("%s", IOtemp);
+			sc_memorySave(IOtemp);
 
-			sc_memorySave(str);
+			fflush(stdout);
+			fflush(stdin);
 			rk_myTermRegime(0, 15, 0, 1, 1);
-			
 		}
 		else if (pressedKey == key_r)
 		{
