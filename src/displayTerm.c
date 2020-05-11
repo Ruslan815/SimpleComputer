@@ -37,28 +37,31 @@ void runTerm(void)
 
 	signal (SIGUSR1, sigHandler);
 	signal (SIGALRM, sigHandler);
-	//struct itimerval beginVal, endVal;
+	struct itimerval beginVal, endVal;
 	int timer = 0;
 
 	while (pressedKey != key_q)
 	{
+		mt_gotoYX(26, 1);
 		rk_myTermRegime(0, 15, 0, 1, 1);
-		rk_readKey(&pressedKey);
-				
-		if (timer == 1 && (pressedKey < 10 || pressedKey > 13))
+
+		if (timer == 1)
 		{
-			if (instructionCounter < 99)
+			mt_gotoYX(26, 1);
+			rk_myTermRegime(0, 1, 0, 1, 1);
+			rk_readKey(&pressedKey);
+
+			if (pressedKey != key_i)
 			{
-				instructionCounter++;
-			}
+				mt_clearScreen();
+				displayTerm();
+				continue;
+			}	
 		}
-		
-		if (timer == 1 && pressedKey != key_i)
+		else
 		{
-			mt_clearScreen();
-			displayTerm();
-			continue;
-		}				
+			rk_readKey(&pressedKey);
+		}									
 
 		char buffer[8] = "\0";
 		int tempValue;	
@@ -136,6 +139,13 @@ void runTerm(void)
 			sc_regSet(IGNORING_PULSES, 0);
 
 			timer = 1;
+
+				beginVal.it_value.tv_sec = 1;
+				beginVal.it_value.tv_usec = 0;
+				beginVal.it_interval.tv_sec = 1;
+				beginVal.it_interval.tv_usec = 0;
+				setitimer (ITIMER_REAL, &beginVal, &endVal);
+			//	alarm(1);
 		}
 		else if (pressedKey == key_tt)
 		{
@@ -147,6 +157,13 @@ void runTerm(void)
 		}
 		else if (pressedKey == key_i)
 		{
+				beginVal.it_value.tv_sec = 0;
+				beginVal.it_value.tv_usec = 0;
+				beginVal.it_interval.tv_sec = 0;
+				beginVal.it_interval.tv_usec = 0;
+				setitimer (ITIMER_REAL, &beginVal, &endVal);
+			//	alarm(0);
+
 			timer = 0;
 			raise(SIGUSR1);
 		}
