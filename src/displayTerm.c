@@ -37,35 +37,38 @@ void runTerm(void)
 
 	signal (SIGUSR1, sigHandler);
 	signal (SIGALRM, sigHandler);
-	//struct itimerval beginVal, endVal;
+	struct itimerval beginVal, endVal;
 	int timer = 0;
 
 	while (pressedKey != key_q)
 	{
+		mt_gotoYX(26, 1);
 		rk_myTermRegime(0, 15, 0, 1, 1);
-		rk_readKey(&pressedKey);
-				
-		if (timer == 1 && (pressedKey < 10 || pressedKey > 13))
+
+		if (timer == 1)
 		{
-			if (instructionCounter < 99)
+			mt_gotoYX(26, 1);
+			rk_myTermRegime(0, 1, 0, 1, 1);
+			rk_readKey(&pressedKey);
+
+			if (pressedKey != key_i)
 			{
-				instructionCounter++;
-			}
+				mt_clearScreen();
+				displayTerm();
+				continue;
+			}	
 		}
-		
-		if (timer == 1 && pressedKey != key_i)
+		else
 		{
-			mt_clearScreen();
-			displayTerm();
-			continue;
-		}				
+			rk_readKey(&pressedKey);
+		}									
 
 		char buffer[8] = "\0";
 		int tempValue;	
 		char tempNum[10] = "\0";
 	//	int value = 0;		
 
-		if (pressedKey >= 0 && pressedKey <= 9)
+		if (pressedKey >= key_Number0 && pressedKey <= key_Number9)
 		{
 			tempNum[0] = pressedKey + 48;
 
@@ -81,23 +84,23 @@ void runTerm(void)
 
 			rk_myTermRegime(0, 15, 0, 1, 1);
 		}
-		else if (pressedKey == 10)
+		else if (pressedKey == key_Up)
 		{
 			moveCursor(&x, &y, &cursorAddress, key_Up);
 		}
-		else if (pressedKey == 11)
+		else if (pressedKey == key_Down)
 		{
 			moveCursor(&x, &y, &cursorAddress, key_Down);
 		}
-		else if (pressedKey == 12)
+		else if (pressedKey == key_Left)
 		{
 			moveCursor(&x, &y, &cursorAddress, key_Left);
 		}
-		else if (pressedKey == 13)
+		else if (pressedKey == key_Right)
 		{
 			moveCursor(&x, &y, &cursorAddress, key_Right);
 		}
-		else if (pressedKey == 14)
+		else if (pressedKey == key_l)
 		{
 			write(1, "|Enter the Filename to load RAM: ", 32);
 				
@@ -114,7 +117,7 @@ void runTerm(void)
 			fflush(stdin);
 			rk_myTermRegime(0, 15, 0, 1, 1);
 		}
-		else if (pressedKey == 15)
+		else if (pressedKey == key_s)
 		{			
 			write(1, "|Enter the Filename to save RAM: ", 32);
 			
@@ -136,8 +139,15 @@ void runTerm(void)
 			sc_regSet(IGNORING_PULSES, 0);
 
 			timer = 1;
+
+				beginVal.it_value.tv_sec = 1;
+				beginVal.it_value.tv_usec = 0;
+				beginVal.it_interval.tv_sec = 1;
+				beginVal.it_interval.tv_usec = 0;
+				setitimer (ITIMER_REAL, &beginVal, &endVal);
+			//	alarm(1);
 		}
-		else if (pressedKey == 17)
+		else if (pressedKey == key_tt)
 		{
 			if (instructionCounter < 99 && timer == 0)
 			{
@@ -145,19 +155,26 @@ void runTerm(void)
 				instructionCounter++;
 			}
 		}
-		else if (pressedKey == 18)
+		else if (pressedKey == key_i)
 		{
+				beginVal.it_value.tv_sec = 0;
+				beginVal.it_value.tv_usec = 0;
+				beginVal.it_interval.tv_sec = 0;
+				beginVal.it_interval.tv_usec = 0;
+				setitimer (ITIMER_REAL, &beginVal, &endVal);
+			//	alarm(0);
+
 			timer = 0;
 			raise(SIGUSR1);
 		}
-		else if (pressedKey == 19)
+		else if (pressedKey == key_F5)
 		{
 			rk_myTermRegime(1, 0, 0, 0, 0);
 			read(0, &buffer, 4);
 			accumulator = atoi(buffer);
 			rk_myTermRegime(0, 15, 0, 1, 1);
 		}
-		else if (pressedKey == 20)
+		else if (pressedKey == key_F6)
 		{
 			rk_myTermRegime(1, 0, 0, 0, 0);
 			read(0, &buffer, 2);
@@ -181,14 +198,12 @@ void sigHandler(int sigNum)
 	{
 		case SIGUSR1:
 
-			if (value == 0)
-			{
-				sc_regInit();
-				sc_memoryInit();
-				instructionCounter = 0;
-				accumulator = 0;
-				sc_regSet(IGNORING_PULSES, 1); 
-			}
+			sc_regInit();
+			sc_memoryInit();
+			instructionCounter = 0;
+			accumulator = 0;
+			sc_regSet(IGNORING_PULSES, 1); 
+
 			break;
 
 		case SIGALRM:	
@@ -222,16 +237,33 @@ void displayMemory(void)
 			if (j + (i * 10) == cursorAddress)
 			{
 				mt_setFgColor(GREEN);
-				(value < 0) ? printf("-%4X ", -value) : printf("+%4X ", value); // (value > 16383)
-				mt_setFgColor(WHITE);
+			}
+
+			if (value < 0)
+			{
+				printf("-%5X", -value);
 			}
 			else
 			{
-				(value < 0) ? printf("-%4X ", -value) : printf("+%4X ", value);
+				int command = 0;
+				int operand = 0;
+
+				if (sc_commandDecode(value, &command, &operand) == 0) // if decoded
+				{
+					printf(" +%2X%2X", command, operand);
+				}
+				else
+				{
+					printf("%6X", value);
+				}
 			}
-			
+
+			if (j + (i * 10) == cursorAddress)
+			{
+				mt_setFgColor(WHITE);
+			}
+
 		} 
-	
 	}
 }
 
@@ -248,7 +280,17 @@ void displayRegisters(void)
 	}
 	else
 	{
-		printf("+%4X", accumulator);
+		int command = 0;
+		int operand = 0;
+
+		if (sc_commandDecode(accumulator, &command, &operand) == 0) // if decoded
+		{
+			printf("+%2X%2X", command, operand);
+		}
+		else
+		{
+			printf(" %4X", accumulator);
+		}
 	}
 
 
@@ -262,7 +304,7 @@ void displayRegisters(void)
         instructionCounter = 0;
     }
 
-	printf("+%d", instructionCounter);
+	printf(" %d", instructionCounter);
 
 	bc_box(7, 64, 3, 20);
 	mt_gotoYX(7, 70);
@@ -274,7 +316,7 @@ void displayRegisters(void)
 
 	int command, operand;
 
-	if (0)//if (sc_commandDecode(value, &command, &operand) == 0) // if decoded
+	if (sc_commandDecode(value, &command, &operand) == 0) // if decoded
 	{
 		printf("+%X : %X", command, operand);
 	}
@@ -358,8 +400,13 @@ void displayBigNumber(void)
 {
 	int tempMemoryNumber = 0; 
 
-	int address = instructionCounter;
+//	int address = instructionCounter;
+	int address = cursorAddress;
 	sc_memoryGet(address, &tempMemoryNumber);
+	int commandFlag = 0;
+	int command = 0;
+	int operand = 0;
+
 
 	if (tempMemoryNumber < 0)
 	{
@@ -367,14 +414,36 @@ void displayBigNumber(void)
 	}
 	else
 	{
-		bc_printBigChar(bcintp, 14, 2, GREEN, BLACK);
+		if (sc_commandDecode(tempMemoryNumber, &command, &operand) == 0) // if decoded
+		{
+			bc_printBigChar(bcintp, 14, 2, GREEN, BLACK);
+			commandFlag = 1;
+		}			
 	}
 		
 	int i; 
 	for (i = 0; i < 4; i++)
 	{
-		int tempNumber = tempMemoryNumber % 16;
-		tempMemoryNumber /= 16;
+		int tempNumber = 0;
+
+		if (commandFlag)
+		{
+			if (i < 2)
+			{
+				tempNumber = operand % 16;
+				operand /= 16;
+			}
+			else
+			{
+				tempNumber = command % 16;
+				command /= 16;
+			}
+		}
+		else
+		{
+			tempNumber = tempMemoryNumber % 16;
+			tempMemoryNumber /= 16;
+		}
 
 		switch(tempNumber)
 		{
