@@ -373,7 +373,8 @@ void displayBigNumber(void)
 {
 	int tempMemoryNumber = 0; 
 
-	int address = instructionCounter;
+//	int address = instructionCounter;
+	int address = cursorAddress;
 	sc_memoryGet(address, &tempMemoryNumber);
 
 	if (tempMemoryNumber < 0)
