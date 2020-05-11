@@ -237,16 +237,33 @@ void displayMemory(void)
 			if (j + (i * 10) == cursorAddress)
 			{
 				mt_setFgColor(GREEN);
-				(value < 0) ? printf("-%4X ", -value) : printf("+%4X ", value); // (value > 16383)
-				mt_setFgColor(WHITE);
+			}
+
+			if (value < 0)
+			{
+				printf("-%5X", -value);
 			}
 			else
 			{
-				(value < 0) ? printf("-%4X ", -value) : printf("+%4X ", value);
+				int command = 0;
+				int operand = 0;
+
+				if (sc_commandDecode(value, &command, &operand) == 0) // if decoded
+				{
+					printf(" +%2X%2X", command, operand);
+				}
+				else
+				{
+					printf("%6X", value);
+				}
 			}
-			
+
+			if (j + (i * 10) == cursorAddress)
+			{
+				mt_setFgColor(WHITE);
+			}
+
 		} 
-	
 	}
 }
 
@@ -263,7 +280,17 @@ void displayRegisters(void)
 	}
 	else
 	{
-		printf("+%4X", accumulator);
+		int command = 0;
+		int operand = 0;
+
+		if (sc_commandDecode(accumulator, &command, &operand) == 0) // if decoded
+		{
+			printf("+%2X%2X", command, operand);
+		}
+		else
+		{
+			printf(" %4X", accumulator);
+		}
 	}
 
 
@@ -277,7 +304,7 @@ void displayRegisters(void)
         instructionCounter = 0;
     }
 
-	printf("+%d", instructionCounter);
+	printf(" %d", instructionCounter);
 
 	bc_box(7, 64, 3, 20);
 	mt_gotoYX(7, 70);
@@ -289,7 +316,7 @@ void displayRegisters(void)
 
 	int command, operand;
 
-	if (0)//if (sc_commandDecode(value, &command, &operand) == 0) // if decoded
+	if (sc_commandDecode(value, &command, &operand) == 0) // if decoded
 	{
 		printf("+%X : %X", command, operand);
 	}
@@ -376,6 +403,10 @@ void displayBigNumber(void)
 //	int address = instructionCounter;
 	int address = cursorAddress;
 	sc_memoryGet(address, &tempMemoryNumber);
+	int commandFlag = 0;
+	int command = 0;
+	int operand = 0;
+
 
 	if (tempMemoryNumber < 0)
 	{
@@ -383,14 +414,36 @@ void displayBigNumber(void)
 	}
 	else
 	{
-		bc_printBigChar(bcintp, 14, 2, GREEN, BLACK);
+		if (sc_commandDecode(tempMemoryNumber, &command, &operand) == 0) // if decoded
+		{
+			bc_printBigChar(bcintp, 14, 2, GREEN, BLACK);
+			commandFlag = 1;
+		}			
 	}
 		
 	int i; 
 	for (i = 0; i < 4; i++)
 	{
-		int tempNumber = tempMemoryNumber % 16;
-		tempMemoryNumber /= 16;
+		int tempNumber = 0;
+
+		if (commandFlag)
+		{
+			if (i < 2)
+			{
+				tempNumber = operand % 16;
+				operand /= 16;
+			}
+			else
+			{
+				tempNumber = command % 16;
+				command /= 16;
+			}
+		}
+		else
+		{
+			tempNumber = tempMemoryNumber % 16;
+			tempMemoryNumber /= 16;
+		}
 
 		switch(tempNumber)
 		{
