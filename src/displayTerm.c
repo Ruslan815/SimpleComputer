@@ -18,7 +18,9 @@ int bcintE [2] = {2114092544, 8258050};
 int bcintF [2] = {33717760, 131646};
 int bcintp [2] = {2115508224, 1579134};
 int bcintm [2] = {2113929216, 126};
-char IOvar[80] = "Output line";
+char IOvar[80] = ""; // Output line
+int timer = 0;
+
 void runTerm(void)
 {
 	sc_regInit();
@@ -38,7 +40,7 @@ void runTerm(void)
 	signal (SIGUSR1, sigHandler);
 	signal (SIGALRM, sigHandler);
 	struct itimerval beginVal, endVal;
-	int timer = 0;
+	
 
 	while (pressedKey != key_q)
 	{
@@ -151,7 +153,7 @@ void runTerm(void)
 		{
 			if (instructionCounter < 99 && timer == 0)
 			{
-				// посылается сигнал УУ для выполнения команды
+			//	CU();
 				instructionCounter++;
 			}
 		}
@@ -192,7 +194,7 @@ void runTerm(void)
 void sigHandler(int sigNum)
 {
 	int value = 0;
-	sc_regGet(4, &value);
+	sc_regGet(IGNORING_PULSES, &value);
 
 	switch(sigNum)
 	{
@@ -210,8 +212,8 @@ void sigHandler(int sigNum)
 			
 			if (value == 0 && instructionCounter < 99)
 			{
+			//	CU();
 				instructionCounter++;
-			//	displayRegisters();	
 			}
 			break;
 	}
@@ -603,4 +605,73 @@ void displayIO()
 {
 	printf("Input/Output:\n");
 	printf("%s\n",IOvar);
+}
+
+int CU()
+{
+	int memoryCell = 0;
+	sc_memoryGet(instructionCounter, *memoryCell);
+
+	int command = 0;
+	int operand = 0;
+
+	if (sc_commandDecode(memoryCell, *command, *operand) == -1) // if not SC command
+	{
+		sc_regSet(WRONG_COMMAND, 1);
+		sc_regSet(IGNORING_PULSES, 1);
+
+		beginVal.it_value.tv_sec = 0;
+		beginVal.it_value.tv_usec = 0;
+		beginVal.it_interval.tv_sec = 0;
+		beginVal.it_interval.tv_usec = 0;
+		setitimer (ITIMER_REAL, &beginVal, &endVal);
+		timer = 0;
+
+		return -1;
+	}
+
+	if (command >= 0x30 && command <= 0x33 || command == 0x65 || command == 0x69)
+	{
+		// ALU(command, operand);
+	}
+	else
+	{ 
+		switch (command)
+		{
+			case 0x10:
+				break;
+
+			case 0x11:
+				break;
+
+			case 0x20:
+				break;
+
+			case 0x21:
+				break;
+
+			case 0x40:
+				break;
+
+			case 0x41:
+				break;
+
+			case 0x42:
+				break;
+
+			case 0x43:
+				break;
+
+			case 0x55:
+				break;
+
+		}
+	}
+	
+	if (instructionCounter + 1 > 99)
+	{
+		sc_regSet(MEMORY_BORDER, 1);
+	}
+
+	return 0;
 }
