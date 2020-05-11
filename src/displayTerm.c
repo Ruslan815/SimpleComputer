@@ -65,7 +65,7 @@ void runTerm(void)
 		char tempNum[10] = "\0";
 	//	int value = 0;		
 
-		if (pressedKey >= 0 && pressedKey <= 9)
+		if (pressedKey >= key_Number0 && pressedKey <= key_Number9)
 		{
 			tempNum[0] = pressedKey + 48;
 
@@ -81,23 +81,23 @@ void runTerm(void)
 
 			rk_myTermRegime(0, 15, 0, 1, 1);
 		}
-		else if (pressedKey == 10)
+		else if (pressedKey == key_Up)
 		{
 			moveCursor(&x, &y, &cursorAddress, key_Up);
 		}
-		else if (pressedKey == 11)
+		else if (pressedKey == key_Down)
 		{
 			moveCursor(&x, &y, &cursorAddress, key_Down);
 		}
-		else if (pressedKey == 12)
+		else if (pressedKey == key_Left)
 		{
 			moveCursor(&x, &y, &cursorAddress, key_Left);
 		}
-		else if (pressedKey == 13)
+		else if (pressedKey == key_Right)
 		{
 			moveCursor(&x, &y, &cursorAddress, key_Right);
 		}
-		else if (pressedKey == 14)
+		else if (pressedKey == key_l)
 		{
 			write(1, "|Enter the Filename to load RAM: ", 32);
 				
@@ -114,7 +114,7 @@ void runTerm(void)
 			fflush(stdin);
 			rk_myTermRegime(0, 15, 0, 1, 1);
 		}
-		else if (pressedKey == 15)
+		else if (pressedKey == key_s)
 		{			
 			write(1, "|Enter the Filename to save RAM: ", 32);
 			
@@ -137,7 +137,7 @@ void runTerm(void)
 
 			timer = 1;
 		}
-		else if (pressedKey == 17)
+		else if (pressedKey == key_tt)
 		{
 			if (instructionCounter < 99 && timer == 0)
 			{
@@ -145,19 +145,19 @@ void runTerm(void)
 				instructionCounter++;
 			}
 		}
-		else if (pressedKey == 18)
+		else if (pressedKey == key_i)
 		{
 			timer = 0;
 			raise(SIGUSR1);
 		}
-		else if (pressedKey == 19)
+		else if (pressedKey == key_F5)
 		{
 			rk_myTermRegime(1, 0, 0, 0, 0);
 			read(0, &buffer, 4);
 			accumulator = atoi(buffer);
 			rk_myTermRegime(0, 15, 0, 1, 1);
 		}
-		else if (pressedKey == 20)
+		else if (pressedKey == key_F6)
 		{
 			rk_myTermRegime(1, 0, 0, 0, 0);
 			read(0, &buffer, 2);
@@ -181,14 +181,12 @@ void sigHandler(int sigNum)
 	{
 		case SIGUSR1:
 
-			if (value == 0)
-			{
-				sc_regInit();
-				sc_memoryInit();
-				instructionCounter = 0;
-				accumulator = 0;
-				sc_regSet(IGNORING_PULSES, 1); 
-			}
+			sc_regInit();
+			sc_memoryInit();
+			instructionCounter = 0;
+			accumulator = 0;
+			sc_regSet(IGNORING_PULSES, 1); 
+
 			break;
 
 		case SIGALRM:	
