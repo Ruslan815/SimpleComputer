@@ -76,7 +76,7 @@ void runTerm(void)
 
 			rk_myTermRegime(1, 0, 0, 0, 0);			
 
-			read(0, &buffer, 3);
+			read(0, &buffer, 4);
 
 			strcat(tempNum, buffer);
 				
@@ -610,12 +610,13 @@ void displayIO()
 int CU()
 {
 	int memoryCell = 0;
-	sc_memoryGet(instructionCounter, *memoryCell);
+	sc_memoryGet(instructionCounter, &memoryCell);
 
 	int command = 0;
 	int operand = 0;
+	int number = 0;
 
-	if (sc_commandDecode(memoryCell, *command, *operand) == -1) // if not SC command
+	if (sc_commandDecode(memoryCell, &command, &operand) == -1) // if not SC command
 	{
 		sc_regSet(WRONG_COMMAND, 1);
 		sc_regSet(IGNORING_PULSES, 1);
@@ -639,30 +640,112 @@ int CU()
 		switch (command)
 		{
 			case 0x10:
+
+				mt_gotoYX(26, 1);
+
+				rk_myTermRegime(1, 0, 0, 0, 0);
+				read(stdin, value, 5);
+				rk_myTermRegime(0, 15, 0, 1, 1);
+
+				sc_memorySet(operand, number);
 				break;
 
 			case 0x11:
+
+				mt_gotoYX(25, 1);
+
+				sc_memoryGet(operand, &number);
+				printf("%X\n", number);
+
+				sc_memorySet(operand, number);
 				break;
 
 			case 0x20:
+
+				sc_memoryGet(operand, &number);
+				accumulator = number;
 				break;
 
 			case 0x21:
+
+				number = accumulator;
+				sc_memorySet(operand, number);
 				break;
 
 			case 0x40:
+
+				if (operand >= 0 && operand <= 99)
+				{
+					instructionCounter = operand;
+				}
+				else
+				{
+					sc_regSet(MEMORY_BORDER, 1);
+				}
+				
 				break;
 
 			case 0x41:
+
+				if (accumulator >= 0)
+				{
+					break;
+				}
+
+				if (operand >= 0 && operand <= 99)
+				{
+					instructionCounter = operand;
+				}
+				else
+				{
+					sc_regSet(MEMORY_BORDER, 1);
+				}
 				break;
 
 			case 0x42:
+
+				if (accumulator)
+				{
+					break;
+				}
+
+				if (operand >= 0 && operand <= 99)
+				{
+					instructionCounter = operand;
+				}
+				else
+				{
+					sc_regSet(MEMORY_BORDER, 1);
+				}
 				break;
 
 			case 0x43:
+
+				sc_regSet(IGNORING_PULSES, 1);
+				timer = 0;
+				beginVal.it_value.tv_sec = 0;
+				beginVal.it_value.tv_usec = 0;
+				beginVal.it_interval.tv_sec = 0;
+				beginVal.it_interval.tv_usec = 0;
+				setitimer (ITIMER_REAL, &beginVal, &endVal); 
+			//	return -1;
 				break;
 
 			case 0x55:
+
+				if (accumulator < 0)
+				{
+					break;
+				}
+
+				if (operand >= 0 && operand <= 99)
+				{
+					instructionCounter = operand;
+				}
+				else
+				{
+					sc_regSet(MEMORY_BORDER, 1);
+				}
 				break;
 
 		}

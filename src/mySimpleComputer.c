@@ -29,7 +29,7 @@ int sc_memorySet (int address, int value)
 	else
 	{
 		flagsRegister = flagsRegister | (1 << (MEMORY_BORDER - 1));
-		printf("Error: Wrong address!\n");
+	//	printf("Error: Wrong address!\n");
 		return -1;
 	}
 	
@@ -45,7 +45,7 @@ int sc_memoryGet (int address, int* value)
 	else
 	{
 		flagsRegister = flagsRegister | (1 << (MEMORY_BORDER - 1));
-		printf("Error: Wrong address!\n");
+	//	printf("Error: Wrong address!\n");
 		return -1;
 	}
 	
@@ -60,7 +60,7 @@ int sc_memorySave (char* filename)
 	
 	if (filePtr == NULL)
 	{
-		printf("Error: Error opening file!\n");
+	//	printf("Error: Error opening file!\n");
 		return -1;
 	}
 	
@@ -79,7 +79,7 @@ int sc_memoryLoad (char* filename)
 	
 	if (filePtr == NULL)
 	{
-		printf("Error: Error opening file!\n");
+	//	printf("Error: Error opening file!\n");
 		return -1;
 	}
 	
@@ -112,7 +112,7 @@ int sc_regSet (int regNumber, int value)
 	}
 	else 
 	{
-		printf("Error: Wrong register or value!\n");
+	//	printf("Error: Wrong register or value!\n");
 		
 		return -1;
 	}
@@ -128,7 +128,7 @@ int sc_regGet (int regNumber, int* value)
 	}
 	else 
 	{
-		printf("Error: Wrong register!\n");
+	//	printf("Error: Wrong register!\n");
 		
 		return -1;
 	}
