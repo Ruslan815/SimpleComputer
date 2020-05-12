@@ -758,3 +758,101 @@ int CU()
 
 	return 0;
 }
+
+int ALU(int comand, int operand) 
+{
+	int value, k, tempBit, tempNumber;
+	sc_memoryGet(operand, &value); // получаем значение из указанной ячейки памяти
+
+	switch(comand)
+	{
+		case 0x30: 
+		{
+			if(accumulator + value > 0x7FFF) 
+			{
+				sc_regSet(OVERFLOW, 1);
+				return -1;
+			}
+
+			accumulator += value;
+			break;
+		}
+		case 0x31:
+		{
+			if(accumulator - value < -0x7FFE) 
+			{
+				sc_regSet(OVERFLOW, 1);
+				return -1;
+			}
+
+			accumulator -= value;
+			break;
+		}
+		case 0x32:
+		{
+			if(value == 0) 
+			{
+				sc_regSet(DIVISION_BY_ZERO, 1);
+				return -1;
+			}
+
+			accumulator /= value;
+			break;
+		}
+		case 0x33:
+		{
+			if(accumulator * value > 0x7FFF) 
+			{
+				sc_regSet(OVERFLOW, 1);
+				return -1;
+			}
+
+			accumulator *= value;
+			break;
+		}
+		case 0x65:
+		{
+			if(accumulator < 0 || accumulator > 99) 
+			{
+				sc_regSet(MEMORY_BORDER, 1);
+				return -1;
+			}
+
+			sc_memoryGet(accumulator, &k);
+
+			if(k + value > 0x7FFF) 
+			{
+				sc_regSet(OVERFLOW, 1);
+				return -1;
+			}
+
+			accumulator = k + value;
+			break;
+		}
+		case 0x69:
+		{
+			k = accumulator;
+			tempNumber = value;
+
+			while (k--)
+			{
+				tempBit = (tempNumber >> 14) & 0x1; // запоминаем 15 разряд числа
+
+				tempNumber = tempNumber << 1; // сдвигаем число влево на 1 разряд
+				tempNumber = tempNumber | tempBit; // ставим в 1 разряд ранее записанный бит
+				tempNumber = tempNumber & 0x7FFF; // зануляем разряды старше 15
+			}
+
+			if (tempNumber > 0x7FFF)
+			{
+				sc_regSet(OVERFLOW, 1);
+				return -1;
+			}
+
+			accumulator = tempNumber;
+			break;
+		}
+	}
+
+	return 0;
+}
