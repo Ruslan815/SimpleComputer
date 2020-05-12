@@ -152,7 +152,7 @@ void runTerm(void)
 		{
 			if (instructionCounter < 99 && timer == 0)
 			{
-			//	CU();
+				CU();
 				instructionCounter++;
 			}
 		}
@@ -211,7 +211,7 @@ void sigHandler(int sigNum)
 			
 			if (value == 0 && instructionCounter < 99)
 			{
-			//	CU();
+				CU();
 				instructionCounter++;
 			}
 			break;
@@ -654,12 +654,17 @@ int CU()
 				sc_memorySet(operand, number);
 				break;
 
-			case 0x11:
+			case 0x11: // не работает функция WRITE
 
-				mt_gotoYX(25, 1);
+				mt_gotoYX(26, 1);
 
 				sc_memoryGet(operand, &number);
-				printf("%X\n", number);
+				fflush(stdout);
+				fflush(stdin);
+			//	printf("HELLO!");
+				write(1, "HELLO", 10);
+				fflush(stdout);
+				fflush(stdin);
 
 				break;
 
@@ -698,7 +703,7 @@ int CU()
 
 				if (operand >= 0 && operand <= 99)
 				{
-					instructionCounter = operand;
+					instructionCounter = operand - 1;
 				}
 				else
 				{
