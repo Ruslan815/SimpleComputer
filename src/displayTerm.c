@@ -20,6 +20,7 @@ int bcintp [2] = {2115508224, 1579134};
 int bcintm [2] = {2113929216, 126};
 char IOvar[80] = ""; // Output line
 int timer = 0;
+struct itimerval beginVal, endVal;
 
 void runTerm(void)
 {
@@ -39,8 +40,6 @@ void runTerm(void)
 
 	signal (SIGUSR1, sigHandler);
 	signal (SIGALRM, sigHandler);
-	struct itimerval beginVal, endVal;
-	
 
 	while (pressedKey != key_q)
 	{
@@ -631,9 +630,14 @@ int CU()
 		return -1;
 	}
 
-	if (command >= 0x30 && command <= 0x33 || command == 0x65 || command == 0x69)
+	if ((command >= 0x30 && command <= 0x33) || command == 0x65 || command == 0x69)
 	{
-		// ALU(command, operand);
+		int statusALU = ALU(command, operand);
+
+		if (statusALU == -1)
+		{
+			return -1;
+		}
 	}
 	else
 	{ 
@@ -644,7 +648,7 @@ int CU()
 				mt_gotoYX(26, 1);
 
 				rk_myTermRegime(1, 0, 0, 0, 0);
-				read(stdin, value, 5);
+				read(0, &number, 5);
 				rk_myTermRegime(0, 15, 0, 1, 1);
 
 				sc_memorySet(operand, number);
@@ -657,7 +661,6 @@ int CU()
 				sc_memoryGet(operand, &number);
 				printf("%X\n", number);
 
-				sc_memorySet(operand, number);
 				break;
 
 			case 0x20:
@@ -681,6 +684,7 @@ int CU()
 				else
 				{
 					sc_regSet(MEMORY_BORDER, 1);
+					return -1;
 				}
 				
 				break;
@@ -699,6 +703,7 @@ int CU()
 				else
 				{
 					sc_regSet(MEMORY_BORDER, 1);
+					return -1;
 				}
 				break;
 
@@ -716,6 +721,7 @@ int CU()
 				else
 				{
 					sc_regSet(MEMORY_BORDER, 1);
+					return -1;
 				}
 				break;
 
@@ -728,7 +734,7 @@ int CU()
 				beginVal.it_interval.tv_sec = 0;
 				beginVal.it_interval.tv_usec = 0;
 				setitimer (ITIMER_REAL, &beginVal, &endVal); 
-			//	return -1;
+				return -1;
 				break;
 
 			case 0x55:
@@ -745,6 +751,7 @@ int CU()
 				else
 				{
 					sc_regSet(MEMORY_BORDER, 1);
+					return -1;
 				}
 				break;
 
@@ -754,6 +761,7 @@ int CU()
 	if (instructionCounter + 1 > 99)
 	{
 		sc_regSet(MEMORY_BORDER, 1);
+		return -1;
 	}
 
 	return 0;
