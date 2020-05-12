@@ -11,7 +11,7 @@ int bc_box(int x, int y, int rows, int columns)
 {
 	if (x < 0 || y < 0 || rows < 0 || columns < 0)
 	{
-		printf("Error: Wrong coordinates or size!");
+	//	printf("Error: Wrong coordinates or size!");
 		return -1;
 	}
 
@@ -47,7 +47,7 @@ int bc_printBigChar(int* arr, int x, int y, enum Colors fgColor, enum Colors bgC
 {
 	if (x < 0 || y < 0 || fgColor < 0 || fgColor > 9 || bgColor < 0 || bgColor > 9)
 	{
-		printf("Error: Wrong coordinates or color!");
+	//	printf("Error: Wrong coordinates or color!");
 		return -1;
 	}
 

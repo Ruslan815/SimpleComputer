@@ -4,13 +4,12 @@ int rk_readKey(enum keys* someKey)
 {
     char temp[10];
     int count = 0;
-//    rk_myTermRegime(0, 0, 1, 1, 0);
 
     count = read(0, temp, 9); 
 
     if (count == -1)
 	{
-      	printf("Error in RK: Error reading input stream!\n");
+    //	printf("Error in RK: Error reading input stream!\n");
       	return -1;
     }
 
@@ -62,7 +61,6 @@ int rk_readKey(enum keys* someKey)
     {
 		*someKey = key_F6;
 	}  
-    
     else if (temp[0] == 'q') 
     {
 		*someKey = key_q;
@@ -72,8 +70,6 @@ int rk_readKey(enum keys* someKey)
 		*someKey = key_Default;
 	}
 
-//    rk_myTermRestore();
-
     return 0;    
 }
 
@@ -81,7 +77,7 @@ int rk_myTermSave(void)
 {
 	if (tcgetattr(0, &termParams) == -1) 
   	{
-    	printf("Error in RK: Error getting of Term Attributes!\n");
+    //	printf("Error in RK: Error getting of Term Attributes!\n");
 		return -1;
 	}
 	
@@ -92,7 +88,7 @@ int rk_myTermRestore(void)
 {
 	if (tcsetattr(0, TCSAFLUSH, &termParams) == -1)
   	{
-    	printf("Error in RK: Error setting of Term Attributes!\n");
+    //	printf("Error in RK: Error setting of Term Attributes!\n");
 		return -1;
 	}
 

@@ -44,7 +44,6 @@ void runTerm(void)
 	while (pressedKey != key_q)
 	{
 		mt_gotoYX(26, 1);
-		rk_myTermRegime(0, 15, 0, 1, 1);
 
 		if (timer == 1)
 		{
@@ -61,6 +60,7 @@ void runTerm(void)
 		}
 		else
 		{
+			rk_myTermRegime(0, 15, 0, 1, 1);
 			rk_readKey(&pressedKey);
 		}									
 
@@ -110,10 +110,8 @@ void runTerm(void)
 			rk_myTermRegime(1, 0, 0, 0, 0);
 			fflush(stdout);
 			fflush(stdin);
-
 			scanf("%s", IOtemp);
 			sc_memoryLoad(IOtemp);
-
 			fflush(stdout);
 			fflush(stdin);
 			rk_myTermRegime(0, 15, 0, 1, 1);
@@ -141,9 +139,9 @@ void runTerm(void)
 
 			timer = 1;
 
-				beginVal.it_value.tv_sec = 1;
+				beginVal.it_value.tv_sec = 2;
 				beginVal.it_value.tv_usec = 0;
-				beginVal.it_interval.tv_sec = 1;
+				beginVal.it_interval.tv_sec = 2;
 				beginVal.it_interval.tv_usec = 0;
 				setitimer (ITIMER_REAL, &beginVal, &endVal);
 			//	alarm(1);
@@ -153,7 +151,6 @@ void runTerm(void)
 			if (instructionCounter < 99 && timer == 0)
 			{
 				CU();
-				instructionCounter++;
 			}
 		}
 		else if (pressedKey == key_i)
@@ -204,7 +201,6 @@ void sigHandler(int sigNum)
 			instructionCounter = 0;
 			accumulator = 0;
 			sc_regSet(IGNORING_PULSES, 1); 
-
 			break;
 
 		case SIGALRM:	
@@ -212,7 +208,8 @@ void sigHandler(int sigNum)
 			if (value == 0 && instructionCounter < 99)
 			{
 				CU();
-				instructionCounter++;
+				mt_clearScreen();
+				displayTerm();
 			}
 			break;
 	}
@@ -336,7 +333,6 @@ void displayRegisters(void)
 	{
 		int tempReg = 0;
 
-	//	sc_regSet(i, i % 2);
 		sc_regGet(i, &tempReg);
 
 		if (tempReg)
@@ -401,7 +397,6 @@ void displayBigNumber(void)
 {
 	int tempMemoryNumber = 0; 
 
-//	int address = instructionCounter;
 	int address = cursorAddress;
 	sc_memoryGet(address, &tempMemoryNumber);
 	int commandFlag = 0;
@@ -513,7 +508,7 @@ void displayBigNumber(void)
 				break;
 
 			default:
-				printf("Error: Error getting memory data!");
+			//	printf("Error: Error getting memory data!");
 				return;
 		}
 
@@ -536,7 +531,7 @@ void displayTerm(void)
 	} 
 	else
 	{
-		printf ("Error: Error deviding size of the screen!\n");
+	//	printf ("Error: Error deviding size of the screen!\n");
 		return;
 	}
 
@@ -552,6 +547,8 @@ void displayTerm(void)
 	displayKeys();
 	displayBigNumber();
 	displayIO();
+	fflush(stdin);
+	fflush(stdout);
 }
 
 void moveCursor(int* x, int* y, int *cursorAddress, int pressedKey)
@@ -648,23 +645,31 @@ int CU()
 				mt_gotoYX(26, 1);
 
 				rk_myTermRegime(1, 0, 0, 0, 0);
-				read(0, &number, 5);
+				fflush(stdout);
+				fflush(stdin);
+				printf("Enter a number: ");
+				sleep(2);
+				scanf("%d", &number);
+				fflush(stdout);
+				fflush(stdin);
 				rk_myTermRegime(0, 15, 0, 1, 1);
 
 				sc_memorySet(operand, number);
 				break;
 
-			case 0x11: // не работает функция WRITE
+			case 0x11:
 
 				mt_gotoYX(26, 1);
-
 				sc_memoryGet(operand, &number);
+
+				rk_myTermRegime(0, 20, 0, 1, 1);
 				fflush(stdout);
 				fflush(stdin);
-			//	printf("HELLO!");
-				write(1, "HELLO", 10);
+				printf("A output number: %X", number); 
+				sleep(2);
 				fflush(stdout);
 				fflush(stdin);
+				rk_myTermRegime(0, 15, 0, 1, 1);
 
 				break;
 
@@ -768,6 +773,8 @@ int CU()
 		sc_regSet(MEMORY_BORDER, 1);
 		return -1;
 	}
+
+	instructionCounter++;
 
 	return 0;
 }
