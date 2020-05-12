@@ -604,3 +604,71 @@ void displayIO()
 	printf("Input/Output:\n");
 	printf("%s\n",IOvar);
 }
+
+int ALU(int comand, int operand) 
+{
+	int value, k;
+	sc_memoryGet(operand, &value);
+	switch(comand)
+	{
+		case 0x30: 
+		{
+			if(accumulator + value > 0xFFFF) {
+				sc_regSet(OVERFLOW, 1);
+				return -1;
+			}
+			accumulator += value;
+			break;
+		}
+		case 0x31:
+		{
+			if(accumulator - value < -0xFFFE) {
+				sc_regSet(OVERFLOW, 1);
+				return -1;
+			}
+			accumulator -= value;
+		}
+		case 0x32:
+		{
+			if(value == 0) {
+				sc_regSet(DIVISION_BY_ZERO, 1);
+				return -1;
+			}
+			accumulator /= value;
+			break;
+		}
+		case 0x33:
+		{
+			if(accumulator * value > 0xFFFF) {
+				sc_regSet(OVERFLOW, 1);
+				return -1;
+			}
+			accumulator *= value;
+			break;
+		}
+		case 0x65:
+		{
+			if(accumulator < 0 && accumulator > 99) {
+				sc_regSet(MEMORY_BORDER, 1);
+				return -1;
+			}
+			sc_memoryGet(accumulator, &k);
+			if(k + value > 0xFFFF) {
+				sc_regSet(OVERFLOW, 1);
+				return -1;
+			}
+			accumulator = k + value;
+			break;
+		}
+		case 0x69:
+		{
+			k = 2;
+			if((value >> k) | (value << (accumulator - k)) > 0xFFFF) {
+				sc_regSet(OVERFLOW, 1);
+				return -1;
+			}
+			accumulator = (value >> k) | (value << (accumulator - k);
+			break;
+		}
+	}
+}

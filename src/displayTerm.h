@@ -45,6 +45,7 @@ void displayKeys(void);
 void displayBigNumber(void);
 void displayTerm(void);
 void moveCursor(int* x, int* y, int *cursorAddress, int pressedKey);
-void displayIO(); 
+void displayIO();
+int ALU(int comand, int operand); 
 
 #endif
