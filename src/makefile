@@ -2,12 +2,16 @@
 
 all: SimpleComputer.exe
 
-SimpleComputer.exe: libdisplayTerm.a libmyReadKey.a libmyBigChars.a libmyTerm.a libmySimpleComputer.a main.o
-	gcc -Wall -Werror main.o -L. -ldisplayTerm -lmyReadKey -lmyBigChars -lmyTerm -lmySimpleComputer -o SimpleComputer.exe -lm
+SimpleComputer.exe: libdisplayTerm.a libmyReadKey.a libmyBigChars.a libmyTerm.a libmySimpleComputer.a libtranslatorAssembly.a main.o 
+	gcc -Wall -Werror main.o -L. -ltranslatorAssembly -ldisplayTerm -lmyReadKey -lmyBigChars -lmyTerm -lmySimpleComputer -o SimpleComputer.exe -lm
 
 libmySimpleComputer.a: mySimpleComputer.o
 	ar rc libmySimpleComputer.a mySimpleComputer.o
 	ranlib libmySimpleComputer.a
+
+libtranslatorAssembly.a: translatorAssembly.o
+	ar rc libtranslatorAssembly.a translatorAssembly.o
+	ranlib libtranslatorAssembly.a
 
 libmyTerm.a: myTerm.o
 	ar rc libmyTerm.a myTerm.o
@@ -24,6 +28,9 @@ libmyReadKey.a: myReadKey.o
 libdisplayTerm.a: displayTerm.o
 	ar rc libdisplayTerm.a displayTerm.o
 	ranlib libdisplayTerm.a
+
+translatorAssembly.o: translatorAssembly.c
+	gcc -Wall -Werror -c translatorAssembly.c
 
 mySimpleComputer.o: mySimpleComputer.c
 	gcc -Wall -Werror -c mySimpleComputer.c
@@ -44,4 +51,4 @@ main.o: main.c
 	gcc -Wall -Werror -c main.c
 
 clean:
-	rm -rf *.o *.exe
+	rm -rf *.o *.exe *.a
