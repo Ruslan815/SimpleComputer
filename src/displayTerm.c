@@ -18,7 +18,6 @@ int bcintE [2] = {2114092544, 8258050};
 int bcintF [2] = {33717760, 131646};
 int bcintp [2] = {2115508224, 1579134};
 int bcintm [2] = {2113929216, 126};
-char IOvar[80] = ""; // Output line
 int timer = 0;
 struct itimerval beginVal, endVal;
 
@@ -114,6 +113,9 @@ void runTerm(void)
 			sc_memoryLoad(IOtemp);
 			fflush(stdout);
 			fflush(stdin);
+			x = 2;
+			y = 3;
+			cursorAddress = 0;
 			rk_myTermRegime(0, 15, 0, 1, 1);
 		}
 		else if (pressedKey == key_s)

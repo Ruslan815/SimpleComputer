@@ -7,7 +7,6 @@
 int main()
 {
 	runTerm();
-//	File_Read("AssemblyTest.asm");
 
   	return 0;
 }

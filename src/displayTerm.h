@@ -35,7 +35,6 @@ extern short int instructionCounter;
 int x;
 int y;
 int cursorAddress;
-//char IOvar[80];
 
 void runTerm(void);
 void sigHandler(int sigNum);
@@ -49,9 +48,5 @@ void displayIO();
 
 int CU();
 int ALU(int comand, int operand); 
-
-int File_Read(char *name);
-int Get_Command(char *str);
-int Read_String(char *str, int length);
 
 #endif

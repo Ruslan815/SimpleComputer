@@ -1,7 +1,5 @@
 #include "translatorAssembly.h"
 
-int programCode[100];
-
 int programInit ()
 {
 	int i;
@@ -14,9 +12,9 @@ int programInit ()
 	return 0;
 }
 
-int File_Read(char* asmName)
+int File_Read(char* inputFileName, char* outputFileName)
 {
-    FILE* input = fopen(asmName, "r");
+    FILE* input = fopen(inputFileName, "r");
 
     if(!input)
 	{
@@ -35,7 +33,7 @@ int File_Read(char* asmName)
 
     fclose(input);
 
-    FILE* outputFilePtr = fopen("AssemblyCode.dat", "wb");
+    FILE* outputFilePtr = fopen(outputFileName, "wb");
     fwrite(programCode, sizeof(int), 100, outputFilePtr);
     fclose(outputFilePtr);
 
@@ -120,7 +118,7 @@ int Read_String(char *str, int length)
 {
     int operand = 0;
     char operationString[7];
-    int address = (str[0] - '0') * 10 + (str[1] - '0');
+    int address = str[1] - '0';
     int pos = 3;
 
     while (str[pos] != ' ')
@@ -144,13 +142,32 @@ int Read_String(char *str, int length)
         pos++;
     }
 
-    for (int j = pos; (str[j] >= '0' && str[j] <= '9') || str[j] == '+'; j++)
-	{
-        if (str[j] != '+')
-		{
-            operand = operand * 10 + (str[j] - '0');
+    int j;
+    if (command == 1)
+    {
+        pos++;
+        command = 0;
+
+        for (j = 0; j < 2; j++, pos++)
+        {
+            command = command * 10 + (str[pos] - '0');
         }
-    }
+
+        for (j = 0; j < 2; j++, pos++)
+        {
+            operand = operand * 10 + (str[pos] - '0');
+        }
+    } 
+    else
+    {
+        for (j = pos; (str[j] >= '0' && str[j] <= '9') || str[j] == '+'; j++)
+        {
+            if (str[j] != '+')
+            {
+                operand = operand * 10 + (str[j] - '0');
+            }
+        }
+    } 
 
     int operation = 0;
 
@@ -161,5 +178,6 @@ int Read_String(char *str, int length)
     }
 
     programCode[address] = operation;
+
 	return 0;
 }
