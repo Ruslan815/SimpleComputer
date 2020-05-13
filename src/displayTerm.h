@@ -3,13 +3,9 @@
 
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <fcntl.h>
 #include <math.h>
-#include <signal.h>
-#include <sys/time.h>
 #include "myBigChars.h"
-#include "mySimpleComputer.h"
-#include "myReadKey.h"
+#include "CPU.h"
 
 extern int bcint0 [2];
 extern int bcint1 [2];
@@ -35,10 +31,10 @@ extern short int instructionCounter;
 int x;
 int y;
 int cursorAddress;
-//char IOvar[80];
+extern int timer;
+extern struct itimerval beginVal, endVal;
 
 void runTerm(void);
-void sigHandler(int sigNum);
 void displayMemory(void);
 void displayRegisters(void);
 void displayKeys(void);
@@ -46,8 +42,5 @@ void displayBigNumber(void);
 void displayTerm(void);
 void moveCursor(int* x, int* y, int *cursorAddress, int pressedKey);
 void displayIO(); 
-
-int CU();
-int ALU(int comand, int operand); 
 
 #endif

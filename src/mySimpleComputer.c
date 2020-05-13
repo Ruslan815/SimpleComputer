@@ -83,6 +83,10 @@ int sc_memoryLoad (char* filename)
 		return -1;
 	}
 	
+	sc_regInit();
+	sc_memoryInit();
+	instructionCounter = 0;
+	accumulator = 0;
 	fread(RAM, sizeof(int), 100, filePtr);
 	
 	fclose(filePtr);

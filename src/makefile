@@ -2,8 +2,8 @@
 
 all: SimpleComputer.exe
 
-SimpleComputer.exe: libdisplayTerm.a libmyReadKey.a libmyBigChars.a libmyTerm.a libmySimpleComputer.a main.o
-	gcc -Wall -Werror main.o -L. -ldisplayTerm -lmyReadKey -lmyBigChars -lmyTerm -lmySimpleComputer -o SimpleComputer.exe -lm
+SimpleComputer.exe: libdisplayTerm.a libmyReadKey.a libmyBigChars.a libmyTerm.a libmySimpleComputer.a libCPU.a main.o 
+	gcc -Wall -Werror main.o -L. -ldisplayTerm -lmyReadKey -lmyBigChars -lmyTerm -lmySimpleComputer -lCPU -o SimpleComputer.exe -lm
 
 libmySimpleComputer.a: mySimpleComputer.o
 	ar rc libmySimpleComputer.a mySimpleComputer.o
@@ -25,6 +25,10 @@ libdisplayTerm.a: displayTerm.o
 	ar rc libdisplayTerm.a displayTerm.o
 	ranlib libdisplayTerm.a
 
+libCPU.a: CPU.o
+	ar rc libCPU.a CPU.o 
+	ranlib libCPU.a
+
 mySimpleComputer.o: mySimpleComputer.c
 	gcc -Wall -Werror -c mySimpleComputer.c
 
@@ -40,8 +44,26 @@ myReadKey.o: myReadKey.c
 displayTerm.o: displayTerm.c
 	gcc -Wall -Werror -c displayTerm.c
 
+CPU.o: CPU.c 
+	gcc -Wall -Werror -c CPU.c 
+
 main.o: main.c
 	gcc -Wall -Werror -c main.c
 
+translator: TranslatorAssembly.exe
+
+TranslatorAssembly.exe: libmySimpleComputer.a libtranslatorAssembly.a libmyReadKey.a mainTranslator.o
+	gcc -Wall -Werror mainTranslator.o -L. -ltranslatorAssembly -lmySimpleComputer -lmyReadKey -o TranslatorAssembly.exe -lm
+
+mainTranslator.o: mainTranslator.c
+	gcc -Wall -Werror -c mainTranslator.c
+
+libtranslatorAssembly.a: translatorAssembly.o
+	ar rc libtranslatorAssembly.a translatorAssembly.o
+	ranlib libtranslatorAssembly.a
+
+translatorAssembly.o: translatorAssembly.c
+	gcc -Wall -Werror -c translatorAssembly.c
+
 clean:
-	rm -rf *.o *.exe
+	rm -rf *.o *.exe *.a
