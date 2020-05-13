@@ -134,7 +134,6 @@ int Read_String(char *str, int length)
 	{
         programCode[address] = 0;
         return 0;
-    //    printf("Invalid command");
     }
 
     while(str[pos] == ' ')
