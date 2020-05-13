@@ -50,4 +50,8 @@ void displayIO();
 int CU();
 int ALU(int comand, int operand); 
 
+int File_Read(char *name);
+int Get_Command(char *str);
+int Read_String(char *str, int length);
+
 #endif
