@@ -148,7 +148,7 @@ void runTerm(void)
 		}
 		else if (pressedKey == key_tt)
 		{
-			if (instructionCounter < 99 && timer == 0)
+			if (instructionCounter < 99)
 			{
 				CU();
 			}
@@ -627,6 +627,7 @@ int CU()
 		return -1;
 	}
 
+	sleep(1);
 	if ((command >= 0x30 && command <= 0x33) || command == 0x65 || command == 0x69)
 	{
 		int statusALU = ALU(command, operand);
@@ -647,30 +648,24 @@ int CU()
 				rk_myTermRegime(1, 0, 0, 0, 0);
 				fflush(stdout);
 				fflush(stdin);
-				printf("Enter a number: ");
-				sleep(2);
-				scanf("%d", &number);
+				printf("Enter a number: ");			
+				scanf("%d", &number);				
 				fflush(stdout);
-				fflush(stdin);
 				rk_myTermRegime(0, 15, 0, 1, 1);
-
 				sc_memorySet(operand, number);
 				break;
 
 			case 0x11:
 
 				mt_gotoYX(26, 1);
+
 				sc_memoryGet(operand, &number);
-
-				rk_myTermRegime(0, 20, 0, 1, 1);
 				fflush(stdout);
 				fflush(stdin);
-				printf("A output number: %X", number); 
+				printf("A output number: %X", number);
+				fflush(stdout);
+				fflush(stdin);
 				sleep(2);
-				fflush(stdout);
-				fflush(stdin);
-				rk_myTermRegime(0, 15, 0, 1, 1);
-
 				break;
 
 			case 0x20:
