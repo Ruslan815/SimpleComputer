@@ -118,7 +118,7 @@ int Read_String(char *str, int length)
 {
     int operand = 0;
     char operationString[7];
-    int address = str[1] - '0';
+    int address = (str[0] - '0') * 10 + (str[1] - '0');
     int pos = 3;
 
     while (str[pos] != ' ')

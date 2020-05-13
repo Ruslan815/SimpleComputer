@@ -602,7 +602,6 @@ void moveCursor(int* x, int* y, int *cursorAddress, int pressedKey)
 void displayIO()
 {
 	printf("Input/Output:\n");
-	printf("%s\n",IOvar);
 }
 
 int CU()
