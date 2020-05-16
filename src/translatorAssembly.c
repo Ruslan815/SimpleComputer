@@ -172,7 +172,7 @@ int Read_String(char *str, int length)
 
     if (sc_commandEncode(command, operand, &operation) == -1)
     {
-        programCode[address] = operand; 
+        programCode[address] = (command << 7) | operand; 
         return 0;
     }
 
