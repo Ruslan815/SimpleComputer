@@ -856,6 +856,26 @@ void movingFix()
         fwrite(input_str, sizeof(char), strlen(input_str), ptr);
     }
 
+    char* var_string = malloc(sizeof(char) * 11);
+    int address;
+    for(int i = 26; i >= 0; i--) {
+        if(var_arr[i].name != '\0') {
+            address = var_arr[i].address;
+            var_string[0] = address / 10 + '0';
+            var_string[1] = address % 10 + '0';
+            var_string[2] = ' ';
+            var_string[3] = '=';
+            var_string[4] = ' ';
+            var_string[5] = '+';
+            var_string[6] = '0';
+            var_string[7] = '0';
+            var_string[8] = '0';
+            var_string[9] = '0';
+            var_string[10] = '\n';
+            fwrite(var_string, sizeof(char), strlen(input_str), ptr);
+        }
+    }
+
     fclose(ptr);
 
     system("rm test2.txt");
