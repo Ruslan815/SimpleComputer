@@ -495,7 +495,7 @@ void parseLetString(char* str, int length)
                 char newNumberVar = generateVar();
                 int newVarIndex = get_var(newNumberVar);
                 var_arr[newVarIndex].value = varValue;
-                var_arr[newVarIndex].isTemp = 1;
+            //    var_arr[newVarIndex].isTemp = 1;
 
                 resultString[i] = newNumberVar;
             }
@@ -718,7 +718,7 @@ void calculate(char* expressionString, int length, char answerVariable)
 
             char newVar = generateVar();
             var_index = get_var(newVar);
-            var_arr[var_index].isTemp = 1;
+        //    var_arr[var_index].isTemp = 1;
 
             switch (expressionString[i])
             {
@@ -869,8 +869,8 @@ void movingFix()
             var_string[5] = '+';
             var_string[6] = '0';
             var_string[7] = '0';
-            var_string[8] = '0';
-            var_string[9] = '0';
+            var_string[8] = (var_arr[i].value / 10) + '0';
+            var_string[9] = (var_arr[i].value % 10) + '0';
             var_string[10] = '\n';
             fwrite(var_string, sizeof(char), strlen(input_str), ptr);
         }

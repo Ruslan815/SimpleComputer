@@ -159,7 +159,7 @@ int Read_String(char *str, int length)
     } 
     else
     {
-        for (j = pos; (str[j] >= '0' && str[j] <= '9') || str[j] == '+'; j++)
+        for (j = pos; (str[j] >= '0' && str[j] <= '9') || str[j] == '+'; j++) // if Symbols with Numbers?
         {
             if (str[j] != '+')
             {
