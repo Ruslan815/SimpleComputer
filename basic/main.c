@@ -486,12 +486,14 @@ void parseLetString(char* str, int length)
 
                 while (str[pos] >= '0' && str[pos] <= '9' && pos <= length)
                 {
-                    char number = str[pos];
-                    varValue += varValue * 10 + (number - '0');
+                    int number = str[pos] - '0';
+                    
+                    varValue *= 10;
+                    varValue += number;
                     pos++;
                 }
                 pos--;
-
+                
                 char newNumberVar = generateVar();
                 int newVarIndex = get_var(newNumberVar);
                 var_arr[newVarIndex].value = varValue;
@@ -714,10 +716,10 @@ void calculate(char* expressionString, int length, char answerVariable)
             }
 
             char tmp[10] = { "LOAD" };
-            addAsmCommand(tmp, leftOperand);
+            addAsmCommand(tmp, var_arr[leftVarIndex].address);
 
             char newVar = generateVar();
-            var_index = get_var(newVar);
+            var_index = get_var(newVar);          
         //    var_arr[var_index].isTemp = 1;
 
             switch (expressionString[i])
@@ -872,6 +874,7 @@ void movingFix()
             var_string[8] = (var_arr[i].value / 10) + '0';
             var_string[9] = (var_arr[i].value % 10) + '0';
             var_string[10] = '\n';
+
             fwrite(var_string, sizeof(char), strlen(input_str), ptr);
         }
     }
