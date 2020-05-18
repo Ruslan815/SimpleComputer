@@ -1,0 +1,8 @@
+10 INPUT A
+20 INPUT B
+30 LET A = 12 + 30
+40 LET B = 5 * 2
+50 IF A > B LET C = A * B + B / 2
+60 PRINT C
+70 REM some comment
+80 END

@@ -137,11 +137,11 @@ void runTerm(void)
 
 			timer = 1;
 
-				beginVal.it_value.tv_sec = 2;
-				beginVal.it_value.tv_usec = 0;
-				beginVal.it_interval.tv_sec = 2;
-				beginVal.it_interval.tv_usec = 0;
-				setitimer (ITIMER_REAL, &beginVal, &endVal);
+			beginVal.it_value.tv_sec = 2;
+			beginVal.it_value.tv_usec = 0;
+			beginVal.it_interval.tv_sec = 2;
+			beginVal.it_interval.tv_usec = 0;
+			setitimer (ITIMER_REAL, &beginVal, &endVal);
 		}
 		else if (pressedKey == key_tt)
 		{
@@ -152,11 +152,11 @@ void runTerm(void)
 		}
 		else if (pressedKey == key_i)
 		{
-				beginVal.it_value.tv_sec = 0;
-				beginVal.it_value.tv_usec = 0;
-				beginVal.it_interval.tv_sec = 0;
-				beginVal.it_interval.tv_usec = 0;
-				setitimer (ITIMER_REAL, &beginVal, &endVal);
+			beginVal.it_value.tv_sec = 0;
+			beginVal.it_value.tv_usec = 0;
+			beginVal.it_interval.tv_sec = 0;
+			beginVal.it_interval.tv_usec = 0;
+			setitimer (ITIMER_REAL, &beginVal, &endVal);
 
 			timer = 0;
 			raise(SIGUSR1);
@@ -204,22 +204,42 @@ void displayMemory(void)
 				mt_setFgColor(GREEN);
 			}
 
+			int command = 0;
+			int operand = 0;
+
 			if (value < 0)
 			{
-				printf("-%5X", -value);
+				if (value == -32768)
+				{
+					value = -1;
+				}
+
+				value = -value;
+				command = (value >> 7) & (~(255 << 7));
+				operand = value & (~(255 << 7));
+
+				printf(" -%2X%2X", command, operand);
 			}
 			else
 			{
-				int command = 0;
-				int operand = 0;
-
 				if (sc_commandDecode(value, &command, &operand) == 0) // if decoded
 				{
 					printf(" +%2X%2X", command, operand);
 				}
 				else
 				{
-					printf("%6X", value);
+					int notCommand = (value >> 14) & 0x1;
+					command = (value >> 7);
+					operand = value & (~(127 << 7));  
+
+					if (notCommand)
+					{			
+						printf(" %2X%2X", command, operand);
+					}
+					else
+					{
+						printf(" +%2X%2X", command, operand);
+					}
 				}
 			}
 
@@ -241,7 +261,19 @@ void displayRegisters(void)
 
 	if (accumulator < 0)
 	{
-		printf("-%4X", -accumulator);
+		int value = -accumulator;
+		int command = 0;
+		int operand = 0;
+
+		if (accumulator == -32768)
+		{
+			value = -1;
+		}
+
+		command = (value >> 7) & (~(127 << 7));
+		operand = value & (~(255 << 7));
+
+		printf(" -%2X%2X", command, operand);
 	}
 	else
 	{
@@ -254,7 +286,18 @@ void displayRegisters(void)
 		}
 		else
 		{
-			printf(" %4X", accumulator);
+			int notCommand = (accumulator >> 14) & 0x1;
+			command = (accumulator >> 7);
+			operand = accumulator & (~(255 << 7)); 
+
+			if (notCommand)
+			{			
+				printf(" %2X%2X", command, operand);
+			}
+			else
+			{
+				printf("+%2X%2X", command, operand);
+			}			
 		}
 	}
 
@@ -366,47 +409,49 @@ void displayBigNumber(void)
 
 	int address = cursorAddress;
 	sc_memoryGet(address, &tempMemoryNumber);
-	int commandFlag = 0;
 	int command = 0;
 	int operand = 0;
 
-
 	if (tempMemoryNumber < 0)
 	{
+		tempMemoryNumber = -tempMemoryNumber;
 		bc_printBigChar(bcintm, 14, 2, GREEN, BLACK);
+		command = (tempMemoryNumber >> 7) & (~(127 << 7));
+		operand = tempMemoryNumber & (~(255 << 7));
 	}
 	else
 	{
-		if (sc_commandDecode(tempMemoryNumber, &command, &operand) == 0) // if decoded
+		int notCommand = (tempMemoryNumber >> 14) & 0x1;
+
+		if (!notCommand)
 		{
 			bc_printBigChar(bcintp, 14, 2, GREEN, BLACK);
-			commandFlag = 1;
-		}			
-	}
-		
+		}
+
+		if (sc_commandDecode(tempMemoryNumber, &command, &operand) == -1) // if not decoded
+		{
+			command = (tempMemoryNumber >> 7);
+			operand = tempMemoryNumber & (~(255 << 7));
+		}
+				
+	}	
+	
 	int i; 
 	for (i = 0; i < 4; i++)
 	{
 		int tempNumber = 0;
 
-		if (commandFlag)
+		if (i < 2)
 		{
-			if (i < 2)
-			{
-				tempNumber = operand % 16;
-				operand /= 16;
-			}
-			else
-			{
-				tempNumber = command % 16;
-				command /= 16;
-			}
+			tempNumber = operand % 16;
+			operand /= 16;
 		}
 		else
 		{
-			tempNumber = tempMemoryNumber % 16;
-			tempMemoryNumber /= 16;
+			tempNumber = command % 16;
+			command /= 16;
 		}
+
 
 		switch(tempNumber)
 		{
@@ -480,8 +525,11 @@ void displayBigNumber(void)
 		}
 
 	}
-
+fflush(stdout);
 	bc_box(13, 1, 10, 44);
+	printf("!!!");
+	
+
 	mt_gotoYX(23, 1);
 }
 

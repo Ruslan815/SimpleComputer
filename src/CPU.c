@@ -20,7 +20,17 @@ void sigHandler(int sigNum)
 			
 			if (value == 0 && instructionCounter < 99)
 			{
-				CU();
+				if (CU() == -1)
+				{
+					sc_regSet(IGNORING_PULSES, 1);
+					beginVal.it_value.tv_sec = 0;
+					beginVal.it_value.tv_usec = 0;
+					beginVal.it_interval.tv_sec = 0;
+					beginVal.it_interval.tv_usec = 0;
+					setitimer (ITIMER_REAL, &beginVal, &endVal);
+					timer = 0;
+				}
+
 				mt_clearScreen();
 				displayTerm();
 			}
@@ -41,13 +51,6 @@ int CU()
 	{
 		sc_regSet(WRONG_COMMAND, 1);
 		sc_regSet(IGNORING_PULSES, 1);
-
-		beginVal.it_value.tv_sec = 0;
-		beginVal.it_value.tv_usec = 0;
-		beginVal.it_interval.tv_sec = 0;
-		beginVal.it_interval.tv_usec = 0;
-		setitimer (ITIMER_REAL, &beginVal, &endVal);
-		timer = 0;
 
 		return -1;
 	}
@@ -77,14 +80,22 @@ int CU()
 				scanf("%d", &number);				
 				fflush(stdout);
 				rk_myTermRegime(0, 15, 0, 1, 1);
-				sc_memorySet(operand, number);
+
+				if (sc_memorySet(operand, number) == -1)
+				{
+					return -1;
+				}
 				break;
 
 			case 0x11:
 
 				mt_gotoYX(26, 1);
 
-				sc_memoryGet(operand, &number);
+				if (sc_memoryGet(operand, &number) == -1)
+				{
+					return -1;
+				}
+
 				fflush(stdout);
 				fflush(stdin);
 				printf("A output number: %X", number);
@@ -95,14 +106,22 @@ int CU()
 
 			case 0x20:
 
-				sc_memoryGet(operand, &number);
+				if (sc_memoryGet(operand, &number) == -1)
+				{
+					return -1;
+				}
+
 				accumulator = number;
 				break;
 
 			case 0x21:
 
 				number = accumulator;
-				sc_memorySet(operand, number);
+
+				if (sc_memorySet(operand, number) == -1)
+				{
+					return -1;
+				}
 				break;
 
 			case 0x40:

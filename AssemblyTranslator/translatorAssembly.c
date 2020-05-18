@@ -1,4 +1,14 @@
-#include "translatorAssembly.h"
+#include "mySimpleComputer.h"
+#include "myReadKey.h"
+#include <string.h>
+#include <unistd.h>
+
+int programInit();
+int File_Read(char* inputFileName, char* outputFileName); 
+int Get_Command(char* str);
+int Read_String(char* str, int length);
+
+short int programCode[100];
 
 int programInit ()
 {
@@ -179,4 +189,26 @@ int Read_String(char *str, int length)
     programCode[address] = operation;
 
 	return 0;
+}
+
+int main()
+{
+    char command[4], input[25], output[25];
+    printf("Enter translation command: \n");
+    fflush(stdin);
+    fflush(stdout);
+    rk_myTermRegime(1, 0, 0, 0, 0);
+    scanf("%s %s %s", command, input, output);
+
+    if (strcmp(command, "sat") != 0)
+    {
+        printf("\nWrong command!\n");
+        sleep(3);
+    }
+    else
+    {
+        File_Read(input, output);
+    }
+    
+    return 0;
 }

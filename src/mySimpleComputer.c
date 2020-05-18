@@ -24,7 +24,7 @@ int sc_memorySet (int address, int value)
 {
 	if (address >= 0 && address <= 99)
 	{
-		RAM[address] = value; 
+		RAM[address] = value & (~(1 << 14)); 
 	}
 	else
 	{
