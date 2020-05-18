@@ -92,7 +92,7 @@ char* add_command(const char* command, int operand)
 {
     char* result = malloc(sizeof(char) * 12);
     int i = 0;
-    if (!strcmp(command, "JNEG") || !strcmp(command, "JUMP"))
+    if (!strcmp(command, "JNEG") || !strcmp(command, "JUMP") || !strcmp(command, "JZ"))
     {
         if (count_asm < 10) {
             result[i] = '0';
@@ -172,7 +172,9 @@ char* add_command(const char* command, int operand)
         }
 
         i += 2;
-        result[i] = '\n';
+        //result[i] = '\n';
+        strcat(result, "\n\0");
+        //printf("%s", result);
     }
     return result;
 }
@@ -182,21 +184,9 @@ char* rem(char* input_str)
     char* command = (char*)calloc(100, sizeof(char));
     int i = 7;
 
-    if (count_asm < 10) {
-        command[0] = '0';
-        command[1] = count_asm + '0';
-        count_asm++;
-    }
-    else {
-        command[0] = count_asm / 10 + '0';
-        command[1] = count_asm % 10 + '0';
-        count_asm++;
-    }
-
-    command[2] = ' ';
-    command[3] = ';';
+    command[0] = ';';
     while (input_str[i] != '\0') {
-        command[i - 3] = input_str[i];
+        command[i - 6] = input_str[i];
         i++;
     }
     command[i] = '\n';
@@ -388,10 +378,12 @@ char* if_func(char* input_str)
         result = add_command("SUB", var_arr[pos].address);
         strcat(command, result);
 
-        result = add_command("JZ", (count_asm + 2) * 10); // если 0, то истина
+        result = add_command("JZ", count_asm + 2); // если 0, то истина
         strcat(command, result);
         result = add_command("JUMP", (count_line + 1) * 10);
         strcat(command, result);
+
+        printf("%s", command);
     }
 
     int j = 3;
@@ -829,16 +821,15 @@ char* end(char* input_str)
         command[1] = count_asm % 10 + '0';
         count_asm++;
     }
-    command[2] = ' ';
-    char tmp[] = { "HALT 00\n" };
-    strcat(command, tmp);
-    //printf("%s !!!!!!!!!\n", command);
+    command[2] = '\0';
+    strcat(command, " HALT 00\n");
+    //printf("%s", command);
     return command;
 }
 
-void movingFix()
+void movingFix(char* file_name)
 {
-    FILE* ptr = fopen("bas_to_asm.sa", "w");
+    FILE* ptr = fopen(file_name, "w");
     char* input_str;
     rewind(output);
     size_t tmp_length;
@@ -846,7 +837,7 @@ void movingFix()
     int tmp_bsk;
 
     while (getline(&input_str, &tmp_length, output) != -1) {
-        if(input_str[3] == 'J') {
+        if(input_str[3] == 'J' && input_str[4] != 'Z') {
             //tmp_asm = (input_str[0] - '0') * 10 + (input_str[1] - '0');
 
             tmp_bsk = (input_str[8] - '0') * 10 + (input_str[9] - '0');
@@ -903,7 +894,7 @@ char* command_decode(char* input_str, char* command)
     switch (i) {
         case 0: {
             //strcpy(result, rem(input_str));
-            result = rem(input_str);
+            //result = rem(input_str);
             break;
         }
         case 1: {
@@ -952,9 +943,19 @@ char* command_decode(char* input_str, char* command)
 int main()
 {
     init_var_arr();
-    //char input_str[100] = { '\0' };
     char* input_str = '\0';
-    input = fopen("test.txt", "r");
+    printf("Enter the command to SimpleBasic translator(sbt *.sb *.sa): \n");
+    char command[2];
+    char input_file[80];
+    char output_file[80];
+    scanf("%s %s %s", command, input_file, output_file);
+
+    if(command[0] != 's' || command[1] != 'b' || command[2] != 't') {
+        printf("Wrong command!");
+        exit(EXIT_FAILURE);
+    }
+    
+    input = fopen(input_file, "r");
     output = fopen("test2.txt", "w");
 
     if (!input) {
@@ -984,7 +985,7 @@ int main()
         }
         fclose(output);
         output = fopen("test2.txt", "rt");
-        movingFix();
+        movingFix(output_file);
     }
 
     fclose(input);
