@@ -837,6 +837,8 @@ void movingFix(char* file_name)
     int address;
     for(int i = 26; i >= 0; i--) {
         if(var_arr[i].name != '\0') {
+            int tempNumber = 0;
+
             address = var_arr[i].address;
             var_string[0] = address / 10 + '0';
             var_string[1] = address % 10 + '0';
@@ -844,12 +846,52 @@ void movingFix(char* file_name)
             var_string[3] = '=';
             var_string[4] = ' ';
             var_string[5] = '+';
-            var_string[6] = '0';
-            var_string[7] = '0';
-            var_string[8] = (var_arr[i].value / 10) + '0';
-            var_string[9] = (var_arr[i].value % 10) + '0';
-            var_string[10] = '\n';
 
+            tempNumber = var_arr[i].value % 16;
+			var_arr[i].value /= 16;
+            if (tempNumber >= 10)
+            {
+                var_string[9] = tempNumber - 10 + 'A';
+            }
+            else
+            {
+                var_string[9] = tempNumber + '0';
+            }          
+
+            tempNumber = var_arr[i].value % 16;
+			var_arr[i].value /= 16;
+            if (tempNumber >= 10)
+            {
+                var_string[8] = tempNumber - 10 + 'A';
+            }
+            else
+            {
+                var_string[8] = tempNumber + '0';
+            }   
+
+            tempNumber = var_arr[i].value % 16;
+			var_arr[i].value /= 16;
+            if (tempNumber >= 10)
+            {
+                var_string[7] = tempNumber - 10 + 'A';
+            }
+            else
+            {
+                var_string[7] = tempNumber + '0';
+            }   
+
+            tempNumber = var_arr[i].value % 16;
+			var_arr[i].value /= 16;
+            if (tempNumber >= 10)
+            {
+                var_string[6] = tempNumber - 10 + 'A';
+            }
+            else
+            {
+                var_string[6] = tempNumber + '0';
+            }       
+            
+            var_string[10] = '\n';
             fwrite(var_string, sizeof(char), strlen(input_str), ptr);
         }
     }

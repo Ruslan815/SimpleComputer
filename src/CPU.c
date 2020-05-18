@@ -96,9 +96,12 @@ int CU()
 					return -1;
 				}
 
+				int tempCommand = (number >> 7);
+				int tempOperand = number & (~(255 << 7));  
+
 				fflush(stdout);
 				fflush(stdin);
-				printf("A output number: %X", number);
+				printf("A output number: %X%X", tempCommand, tempOperand);
 				fflush(stdout);
 				fflush(stdin);
 				sleep(2);

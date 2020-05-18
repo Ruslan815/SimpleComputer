@@ -189,7 +189,6 @@ int Read_String(char *str, int length)
         programCode[address] = command;
         programCode[address] <<= 7;
         programCode[address] |= operand;
-        printf("%d :", programCode[address]);
     } 
     else
     {
