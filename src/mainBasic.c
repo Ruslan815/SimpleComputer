@@ -79,7 +79,7 @@ int get_var(char var_tmp)
 char generateVar()
 {
     for (int i = 0; i < 27; i++) {
-        char tmp = 'A' + i;
+        char tmp = 'Z' - i;
         if (get_var(tmp) == -1) {
             add_var(tmp, 0);
             return tmp;
