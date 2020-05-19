@@ -1,4 +1,15 @@
-#include "translatorAssembly.h"
+#include "mySimpleComputer.h"
+#include "myReadKey.h"
+#include <string.h>
+#include <unistd.h>
+#include <math.h>
+
+int programInit();
+int File_Read(char* inputFileName, char* outputFileName); 
+int Get_Command(char* str);
+int Read_String(char* str, int length);
+
+short int programCode[100];
 
 int programInit ()
 {
@@ -147,36 +158,72 @@ int Read_String(char *str, int length)
         pos++;
         command = 0;
 
-        for (j = 0; j < 2; j++, pos++)
+        for (j = 1; j >= 0; j--, pos++)
         {
-            command = command * 10 + (str[pos] - '0');
+            if (str[pos] >= 'A' && str[pos] <= 'F')
+            {
+                int symbolNumber = str[pos] - 'A' + 10;
+                command += symbolNumber * pow(16, j);
+            }
+            else
+            {
+                int symbolNumber = str[pos] - '0';
+                command += symbolNumber * pow(16, j);
+            }
         }
 
-        for (j = 0; j < 2; j++, pos++)
+        for (j = 1; j >= 0; j--, pos++)
         {
-            operand = operand * 10 + (str[pos] - '0');
+            if (str[pos] >= 'A' && str[pos] <= 'F')
+            {
+                int symbolNumber = str[pos] - 'A' + 10;
+                operand += symbolNumber * pow(16, j);
+            }
+            else
+            {
+                int symbolNumber = str[pos] - '0';
+                operand += symbolNumber * pow(16, j);
+            }
         }
+
+        programCode[address] = command;
+        programCode[address] <<= 7;
+        programCode[address] |= operand;
     } 
     else
     {
-        for (j = pos; (str[j] >= '0' && str[j] <= '9') || str[j] == '+'; j++)
+        for (j = pos; (str[j] >= '0' && str[j] <= '9'); j++)
         {
-            if (str[j] != '+')
-            {
-                operand = operand * 10 + (str[j] - '0');
-            }
+            operand *= 10;
+            operand += (str[j] - '0');
         }
+
+        int operation = 0;
+        sc_commandEncode(command, operand, &operation);
+        programCode[address] = operation;
     } 
 
-    int operation = 0;
-
-    if (sc_commandEncode(command, operand, &operation) == -1)
-    {
-        programCode[address] = operand; 
-        return 0;
-    }
-
-    programCode[address] = operation;
-
 	return 0;
+}
+
+int main()
+{
+    char command[4], input[25], output[25];
+    printf("Enter the command to SimpleAssembly translator(sat *.sa *.o): \n");
+    fflush(stdin);
+    fflush(stdout);
+    rk_myTermRegime(1, 0, 0, 0, 0);
+    scanf("%s %s %s", command, input, output);
+
+    if (strcmp(command, "sat") != 0)
+    {
+        printf("\nWrong command!\n");
+        sleep(3);
+    }
+    else
+    {
+        File_Read(input, output);
+    }
+    
+    return 0;
 }

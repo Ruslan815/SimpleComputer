@@ -50,20 +50,21 @@ CPU.o: CPU.c
 main.o: main.c
 	gcc -Wall -Werror -c main.c
 
-translator: TranslatorAssembly.exe
+translatorAsm: TranslatorAssembly.exe
 
-TranslatorAssembly.exe: libmySimpleComputer.a libtranslatorAssembly.a libmyReadKey.a mainTranslator.o
-	gcc -Wall -Werror mainTranslator.o -L. -ltranslatorAssembly -lmySimpleComputer -lmyReadKey -o TranslatorAssembly.exe -lm
+TranslatorAssembly.exe: libmySimpleComputer.a libmyReadKey.a mainAssembly.o
+	gcc -Wall -Werror mainAssembly.o -L. -lmySimpleComputer -lmyReadKey -o TranslatorAssembly.exe -lm
 
-mainTranslator.o: mainTranslator.c
-	gcc -Wall -Werror -c mainTranslator.c
+mainAssembly.o: mainAssembly.c
+	gcc -Wall -Werror -c mainAssembly.c
 
-libtranslatorAssembly.a: translatorAssembly.o
-	ar rc libtranslatorAssembly.a translatorAssembly.o
-	ranlib libtranslatorAssembly.a
+translatorBas: TranslatorBasic.exe
 
-translatorAssembly.o: translatorAssembly.c
-	gcc -Wall -Werror -c translatorAssembly.c
+TranslatorBasic.exe: libmySimpleComputer.a libmyReadKey.a mainBasic.o
+	gcc -Wall -Werror mainBasic.o -L. -lmySimpleComputer -lmyReadKey -o TranslatorBasic.exe -lm
+
+mainBasic.o: mainBasic.c
+	gcc -Wall -Werror -c mainBasic.c
 
 clean:
 	rm -rf *.o *.exe *.a

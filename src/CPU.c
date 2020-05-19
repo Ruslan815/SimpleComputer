@@ -20,7 +20,17 @@ void sigHandler(int sigNum)
 			
 			if (value == 0 && instructionCounter < 99)
 			{
-				CU();
+				if (CU() == -1)
+				{
+					sc_regSet(IGNORING_PULSES, 1);
+					beginVal.it_value.tv_sec = 0;
+					beginVal.it_value.tv_usec = 0;
+					beginVal.it_interval.tv_sec = 0;
+					beginVal.it_interval.tv_usec = 0;
+					setitimer (ITIMER_REAL, &beginVal, &endVal);
+					timer = 0;
+				}
+
 				mt_clearScreen();
 				displayTerm();
 			}
@@ -42,17 +52,10 @@ int CU()
 		sc_regSet(WRONG_COMMAND, 1);
 		sc_regSet(IGNORING_PULSES, 1);
 
-		beginVal.it_value.tv_sec = 0;
-		beginVal.it_value.tv_usec = 0;
-		beginVal.it_interval.tv_sec = 0;
-		beginVal.it_interval.tv_usec = 0;
-		setitimer (ITIMER_REAL, &beginVal, &endVal);
-		timer = 0;
-
 		return -1;
 	}
 
-	sleep(1);
+	usleep(500000); // usecs
 	if ((command >= 0x30 && command <= 0x33) || command == 0x65 || command == 0x69)
 	{
 		int statusALU = ALU(command, operand);
@@ -77,17 +80,28 @@ int CU()
 				scanf("%d", &number);				
 				fflush(stdout);
 				rk_myTermRegime(0, 15, 0, 1, 1);
-				sc_memorySet(operand, number);
+
+				if (sc_memorySet(operand, number) == -1)
+				{
+					return -1;
+				}
 				break;
 
 			case 0x11:
 
 				mt_gotoYX(26, 1);
 
-				sc_memoryGet(operand, &number);
+				if (sc_memoryGet(operand, &number) == -1)
+				{
+					return -1;
+				}
+
+				int tempCommand = (number >> 7);
+				int tempOperand = number & (~(255 << 7));  
+
 				fflush(stdout);
 				fflush(stdin);
-				printf("A output number: %X", number);
+				printf("A output number: %2X%2X", tempCommand, tempOperand);
 				fflush(stdout);
 				fflush(stdin);
 				sleep(2);
@@ -95,21 +109,29 @@ int CU()
 
 			case 0x20:
 
-				sc_memoryGet(operand, &number);
+				if (sc_memoryGet(operand, &number) == -1)
+				{
+					return -1;
+				}
+
 				accumulator = number;
 				break;
 
 			case 0x21:
 
 				number = accumulator;
-				sc_memorySet(operand, number);
+
+				if (sc_memorySet(operand, number) == -1)
+				{
+					return -1;
+				}
 				break;
 
 			case 0x40:
 
 				if (operand >= 0 && operand <= 99)
 				{
-					instructionCounter = operand;
+					instructionCounter = operand - 1;
 				}
 				else
 				{
