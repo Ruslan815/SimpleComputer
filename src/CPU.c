@@ -55,7 +55,7 @@ int CU()
 		return -1;
 	}
 
-	sleep(1);
+	usleep(500000); // usecs
 	if ((command >= 0x30 && command <= 0x33) || command == 0x65 || command == 0x69)
 	{
 		int statusALU = ALU(command, operand);
@@ -101,7 +101,7 @@ int CU()
 
 				fflush(stdout);
 				fflush(stdin);
-				printf("A output number: %X%X", tempCommand, tempOperand);
+				printf("A output number: %2X%2X", tempCommand, tempOperand);
 				fflush(stdout);
 				fflush(stdin);
 				sleep(2);

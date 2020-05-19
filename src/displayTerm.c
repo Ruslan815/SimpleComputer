@@ -137,9 +137,9 @@ void runTerm(void)
 
 			timer = 1;
 
-			beginVal.it_value.tv_sec = 2;
+			beginVal.it_value.tv_sec = 1;
 			beginVal.it_value.tv_usec = 0;
-			beginVal.it_interval.tv_sec = 2;
+			beginVal.it_interval.tv_sec = 1;
 			beginVal.it_interval.tv_usec = 0;
 			setitimer (ITIMER_REAL, &beginVal, &endVal);
 		}
