@@ -1,4 +1,3 @@
-#include "mySimpleComputer.h"
 #include "myReadKey.h"
 #include <unistd.h>
 #include <stdio.h>
@@ -10,7 +9,6 @@ struct Variable
     char name;
     int address;
     int value;
-    //    int isTemp;
 };
 
 struct Stack
@@ -35,7 +33,7 @@ FILE *output = NULL;
 const char command_arr[][7] = {"REM", "INPUT", "PRINT", "GOTO", "IF", "LET", "END"};
 
 int count_asm = 0;
-int count_line = 1;
+int count_bas = 1;
 int var_count = 0;
 int var_adr = 99;
 char asmCommand[240];
@@ -74,7 +72,6 @@ void init_var_arr()
     {
         var_arr[i].name = '\0';
         var_arr[i].address = 0;
-        //    var_arr[i].isTemp = 0;
         var_arr[i].value = 0;
     }
 }
@@ -124,6 +121,7 @@ char *add_command(const char *command, int operand)
 {
     char *result = malloc(sizeof(char) * 12);
     int i = 0;
+/*
     if (!strcmp(command, "JNEG") || !strcmp(command, "JUMP") || !strcmp(command, "JZ"))
     {
         if (count_asm < 10)
@@ -167,9 +165,9 @@ char *add_command(const char *command, int operand)
 
         i += 2;
         result[i] = '\n';
-    }
-    else
-    {
+    }*/
+//    else
+//    {
         if (count_asm < 10)
         {
             result[i] = '0';
@@ -211,8 +209,8 @@ char *add_command(const char *command, int operand)
 
         i += 2;
         strcat(result, "\n\0");
-        //printf("%s", result);
-    }
+//    }
+    
     return result;
 }
 
@@ -222,11 +220,13 @@ char *rem(char *input_str)
     int i = 7;
 
     command[0] = ';';
+
     while (input_str[i] != '\0')
     {
         command[i - 6] = input_str[i];
         i++;
     }
+
     command[i] = '\n';
     return command;
 }
@@ -254,9 +254,14 @@ char *input_func(char *input_str)
     command[5] = 'A';
     command[6] = 'D';
     char value = input_str[9];
-    add_var(value, 0);
     int i = get_var(value);
     command[7] = ' ';
+
+    if (i == -1)
+    {
+        add_var(value, 0);
+        i = get_var(value);
+    }
 
     if (var_arr[i].address < 10)
     {
@@ -275,7 +280,7 @@ char *input_func(char *input_str)
     return command;
 }
 
-char *print(char *input_str)
+char *print_func(char *input_str)
 {
     char *command = (char *)calloc(12, sizeof(char));
 
@@ -291,6 +296,7 @@ char *print(char *input_str)
         command[1] = count_asm % 10 + '0';
         count_asm++;
     }
+
     command[2] = ' ';
     command[3] = 'W';
     command[4] = 'R';
@@ -300,6 +306,13 @@ char *print(char *input_str)
     char value = input_str[9];
     int i = get_var(value);
     command[8] = ' ';
+
+    if (i == -1)
+    {
+        add_var(value, 0); 
+        i = get_var(value); 
+    }
+
     if (var_arr[i].address < 10)
     {
         command[9] = '0';
@@ -310,6 +323,7 @@ char *print(char *input_str)
         command[9] = var_arr[i].address / 10 + '0';
         command[10] = var_arr[i].address % 10 + '0';
     }
+
     command[11] = '\n';
     return command;
 }
@@ -338,7 +352,7 @@ char *if_func(char *input_str)
         char tmp_value[10];
 
         int tmp_char;
-        for (i = 6; input_str[i] != ' '; i++)
+        for ( ; input_str[i] != ' '; i++)
         {
             char tmp[] = {input_str[i], '\0'};
             strcat(tmp_value, tmp);
@@ -348,7 +362,6 @@ char *if_func(char *input_str)
         var_a = generateVar();
         int tempVarIndex = get_var(var_a);
         var_arr[tempVarIndex].value = tmp_char;
-        //    add_var(var_a, tmp_char);
         i++;
     }
     else
@@ -365,20 +378,7 @@ char *if_func(char *input_str)
     }
 
     char sign = input_str[i];
-/*
-    if (input_str[i] == '>')
-    {
-        sign = '>';
-    }
-    else if (input_str[i] == '<')
-    {
-        sign = '<';
-    }
-    else if (input_str[i] == '=')
-    {
-        sign = '=';
-    }
-*/
+    
     i += 2;
 
     if (input_str[i] < 'A')
@@ -396,7 +396,6 @@ char *if_func(char *input_str)
         var_b = generateVar();
         int tempVarIndex = get_var(var_b);
         var_arr[tempVarIndex].value = tmp_char;
-    //    add_var(var_b, tmp_char);
         i++;
     }
     else
@@ -424,10 +423,10 @@ char *if_func(char *input_str)
         result = add_command("SUB", var_arr[pos].address);
         strcat(command, result);
 
-        result = add_command("JNEG", (count_line + 1) * 10); //выполнится, если условие ложное
+        result = add_command("JNEG", (count_bas + 1) * 10); //выполнится, если условие ложное (отрицательное число)
         strcat(command, result);
 
-        result = add_command("JZ", count_asm + 2); //выполнится, если условие ложное
+        result = add_command("JZ", (count_bas + 1) * 10); //выполнится, если условие ложное (ноль)
         strcat(command, result);
     }
     else if (sign == '<')
@@ -440,10 +439,10 @@ char *if_func(char *input_str)
         result = add_command("SUB", var_arr[pos].address);
         strcat(command, result);
 
-        result = add_command("JNEG", (count_line + 1) * 10); //выполнится, если условие ложное
+        result = add_command("JNEG", (count_bas + 1) * 10); //выполнится, если условие ложное (отрицательное число)
         strcat(command, result);
 
-        result = add_command("JZ", count_asm + 2); //выполнится, если условие ложное
+        result = add_command("JZ", (count_bas + 1) * 10); //выполнится, если условие ложное (ноль)
         strcat(command, result);
     }
     else if (sign == '=')
@@ -456,12 +455,10 @@ char *if_func(char *input_str)
         result = add_command("SUB", var_arr[pos].address);
         strcat(command, result);
 
-        result = add_command("JZ", count_asm + 2); // если 0, то истина
+        result = add_command("JJ", count_asm + 2); // если 0, то истина
         strcat(command, result);
-        result = add_command("JUMP", (count_line + 1) * 10);
+        result = add_command("JUMP", (count_bas + 1) * 10);
         strcat(command, result);
-
-        printf("%s", command);
     }
 
     int j = 3;
@@ -863,6 +860,7 @@ void let(char *str, int length)
 char *end(char *input_str)
 {
     char *command = malloc(sizeof(char) * 11);
+
     if (count_asm < 10)
     {
         command[0] = '0';
@@ -875,9 +873,10 @@ char *end(char *input_str)
         command[1] = count_asm % 10 + '0';
         count_asm++;
     }
+
     command[2] = '\0';
     strcat(command, " HALT 00\n");
-    //printf("%s", command);
+
     return command;
 }
 
@@ -891,14 +890,25 @@ void movingFix(char *file_name)
 
     while (getline(&input_str, &tmp_length, output) != -1)
     {
-        if (input_str[3] == 'J' && input_str[4] != 'Z')
+        if (input_str[3] == 'J' && (input_str[4] == 'U' || input_str[4] == 'N'))
         {
             tmp_bsk = (input_str[8] - '0') * 10 + (input_str[9] - '0');
             tmp_bsk = bas_to_asm[tmp_bsk / 10 - 1];
             input_str[8] = tmp_bsk / 10 + '0';
             input_str[9] = tmp_bsk % 10 + '0';
         }
-        //printf("%s", input_str);
+        else if (input_str[3] == 'J' && input_str[4] == 'Z')
+        {
+            tmp_bsk = (input_str[6] - '0') * 10 + (input_str[7] - '0');
+            tmp_bsk = bas_to_asm[tmp_bsk / 10 - 1];
+            input_str[6] = tmp_bsk / 10 + '0';
+            input_str[7] = tmp_bsk % 10 + '0';
+        }
+        else if (input_str[3] == 'J' && input_str[4] == 'J')
+        {
+            input_str[4] = 'Z';
+        }
+ 
         fwrite(input_str, sizeof(char), strlen(input_str), ptr);
     }
 
@@ -918,48 +928,20 @@ void movingFix(char *file_name)
             var_string[4] = ' ';
             var_string[5] = '+';
 
-            tempNumber = var_arr[i].value % 16;
-            var_arr[i].value /= 16;
-            if (tempNumber >= 10)
+            int j = 9;
+            for ( ; j >= 6; j--)
             {
-                var_string[9] = tempNumber - 10 + 'A';
-            }
-            else
-            {
-                var_string[9] = tempNumber + '0';
-            }
+                tempNumber = var_arr[i].value % 16;
+                var_arr[i].value /= 16;
 
-            tempNumber = var_arr[i].value % 16;
-            var_arr[i].value /= 16;
-            if (tempNumber >= 10)
-            {
-                var_string[8] = tempNumber - 10 + 'A';
-            }
-            else
-            {
-                var_string[8] = tempNumber + '0';
-            }
-
-            tempNumber = var_arr[i].value % 16;
-            var_arr[i].value /= 16;
-            if (tempNumber >= 10)
-            {
-                var_string[7] = tempNumber - 10 + 'A';
-            }
-            else
-            {
-                var_string[7] = tempNumber + '0';
-            }
-
-            tempNumber = var_arr[i].value % 16;
-            var_arr[i].value /= 16;
-            if (tempNumber >= 10)
-            {
-                var_string[6] = tempNumber - 10 + 'A';
-            }
-            else
-            {
-                var_string[6] = tempNumber + '0';
+                if (tempNumber >= 10)
+                {
+                    var_string[j] = tempNumber - 10 + 'A';
+                }
+                else
+                {
+                    var_string[j] = tempNumber + '0';
+                }
             }
 
             var_string[10] = '\n';
@@ -974,7 +956,6 @@ void movingFix(char *file_name)
 
 char *command_decode(char *input_str, char *command)
 {
-    //printf("%s \n", command);
     int i;
     for (i = 0; i < 7; i++)
     {
@@ -982,59 +963,56 @@ char *command_decode(char *input_str, char *command)
         {
             break;
         }
-        //printf("command: %s command_arr: %s\n", command, command_arr[i]);
     }
-    //printf("%s \n", command);
-    //printf("%d \n", i);
 
     char *result = malloc(sizeof(char) * 240);
+
     switch (i)
     {
-    case 0:
-    {
-        //result = rem(input_str);
-        break;
-    }
-    case 1:
-    {
-        result = input_func(input_str);
-        break;
-    }
-    case 2:
-    {
-        result = print(input_str);
-        break;
-    }
-    case 3:
-    {
-        result = goto_func(input_str);
-        break;
-    }
-    case 4:
-    {
-        result = if_func(input_str);
-        break;
-    }
-    case 5:
-    {
-        let(input_str, strlen(input_str));
-        strcpy(result, asmCommand);
-        strcpy(asmCommand, "\0");
-        break;
-    }
-    case 6:
-    {
-        result = end(input_str);
-        break;
-    }
-    default:
-    {
-        printf("wrong command!!! \n");
-        exit(EXIT_FAILURE);
-    }
+        case 0:
+        {
+            //result = rem(input_str);
+            break;
+        }
+        case 1:
+        {
+            result = input_func(input_str);
+            break;
+        }
+        case 2:
+        {
+            result = print_func(input_str);
+            break;
+        }
+        case 3:
+        {
+            result = goto_func(input_str);
+            break;
+        }
+        case 4:
+        {
+            result = if_func(input_str);
+            break;
+        }
+        case 5:
+        {
+            let(input_str, strlen(input_str));
+            strcpy(result, asmCommand);
+            strcpy(asmCommand, "\0");
+            break;
+        }
+        case 6:
+        {
+            result = end(input_str);
+            break;
+        }
+        default:
+        {
+            printf("wrong command!!! \n");
+            exit(EXIT_FAILURE);
+        }
     }
 
-    //printf("%s", result);
     return result;
 }
 
@@ -1067,22 +1045,24 @@ int main()
     else
     {
         size_t tmp_length;
+
         while (getline(&input_str, &tmp_length, input) != -1)
         {
-            //printf("%s \n", input_str);
-            bas_to_asm[count_line - 1] = count_asm;
+            bas_to_asm[count_bas - 1] = count_asm;
             char command[7] = {'\0'};
+
             for (int i = 3; input_str[i] != ' ' && input_str[i] != '\0' && input_str[i] != '\n'; i++)
             {
                 command[i - 3] = input_str[i];
             }
-            //printf("%s \n", command);
+
             char *result = malloc(sizeof(char) * 240);
             result = command_decode(input_str, command);
-            count_line++;
-            //printf("%s", result);
+            count_bas++;
+
             fwrite(result, sizeof(char), strlen(result), output);
         }
+
         fclose(output);
         output = fopen("tempFile.txt", "rt");
         movingFix(outputFileName);

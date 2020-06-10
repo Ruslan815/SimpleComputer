@@ -168,7 +168,7 @@ int CU()
 
 				if (operand >= 0 && operand <= 99)
 				{
-					instructionCounter = operand;
+					instructionCounter = operand - 1;
 				}
 				else
 				{
