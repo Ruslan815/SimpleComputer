@@ -121,95 +121,48 @@ char *add_command(const char *command, int operand)
 {
     char *result = malloc(sizeof(char) * 12);
     int i = 0;
-/*
-    if (!strcmp(command, "JNEG") || !strcmp(command, "JUMP") || !strcmp(command, "JZ"))
+
+    if (count_asm < 10)
     {
-        if (count_asm < 10)
-        {
-            result[i] = '0';
-            result[i + 1] = count_asm + '0';
-            count_asm++;
-        }
-        else
-        {
-            result[i] = count_asm / 10 + '0';
-            result[i + 1] = count_asm % 10 + '0';
-            count_asm++;
-        }
+        result[i] = '0';
+        result[i + 1] = count_asm + '0';
+        count_asm++;
+    }
+    else
+    {
+        result[i] = count_asm / 10 + '0';
+        result[i + 1] = count_asm % 10 + '0';
+        count_asm++;
+    }
 
-        i += 2;
-        strcat(result, " ");
-        i++;
-        strcat(result, command);
-        i += strlen(command);
-        strcat(result, " ");
-        i++;
+    i += 2;
+    strcat(result, " ");
+    i++;
+    strcat(result, command);
+    i += strlen(command);
+    strcat(result, " ");
+    i++;
 
-        if (operand < 10)
-        {
-            char param[2];
-            param[0] = operand + '0';
-            param[1] = '\0';
-            strcat(result, "0");
-            strcat(result, param);
-        }
-        else
-        {
-            char param[2];
-            param[0] = operand / 10 + '0';
-            param[1] = '\0';
-            strcat(result, param);
-            param[0] = operand % 10 + '0';
-            strcat(result, param);
-        }
+    if (operand < 10)
+    {
+        strcat(result, "0");
+        char param[2];
+        param[0] = operand + '0';
+        param[1] = '\0';
+        strcat(result, param);
+    }
+    else
+    {
+        char param[2];
+        param[0] = operand / 10 + '0';
+        param[1] = '\0';
+        strcat(result, param);
+        param[0] = operand % 10 + '0';
+        strcat(result, param);
+    }
 
-        i += 2;
-        result[i] = '\n';
-    }*/
-//    else
-//    {
-        if (count_asm < 10)
-        {
-            result[i] = '0';
-            result[i + 1] = count_asm + '0';
-            count_asm++;
-        }
-        else
-        {
-            result[i] = count_asm / 10 + '0';
-            result[i + 1] = count_asm % 10 + '0';
-            count_asm++;
-        }
-
-        i += 2;
-        strcat(result, " ");
-        i++;
-        strcat(result, command);
-        i += strlen(command);
-        strcat(result, " ");
-        i++;
-
-        if (operand < 10)
-        {
-            strcat(result, "0");
-            char param[2];
-            param[0] = operand + '0';
-            param[1] = '\0';
-            strcat(result, param);
-        }
-        else
-        {
-            char param[2];
-            param[0] = operand / 10 + '0';
-            param[1] = '\0';
-            strcat(result, param);
-            param[0] = operand % 10 + '0';
-            strcat(result, param);
-        }
-
-        i += 2;
-        strcat(result, "\n\0");
-//    }
+    i += 2;
+    strcat(result, "\n\0");
     
     return result;
 }
@@ -485,23 +438,6 @@ char *if_func(char *input_str)
     return command;
 }
 
-/*
-void deleteTempVars()
-{
-    int i;
-    for (i = 0; i < 27; i++)
-    {
-        if (var_arr[i].isTemp == 1)
-        {
-            var_arr[i].name = '\0';
-            var_arr[i].isTemp = 0;
-            var_arr[i].value = 0;
-            var_arr[i].address = 0;
-            var_adr++;
-        }
-    }
-}
-*/
 void parseLetString(char *str, int length)
 {
     char resultString[80];
@@ -556,7 +492,6 @@ void parseLetString(char *str, int length)
 
     resultString[i] = '\0';
     strcpy(str, resultString);
-    //	printf("Result: %s\n", str);
 }
 
 void toReversePolishNotation(char *str, int length)
@@ -590,91 +525,91 @@ void toReversePolishNotation(char *str, int length)
 
             switch (stackTop)
             {
-            case '!':
-                stackSymNum = 0;
-                break;
+                case '!':
+                    stackSymNum = 0;
+                    break;
 
-            case '+':
-                stackSymNum = 1;
-                break;
+                case '+':
+                    stackSymNum = 1;
+                    break;
 
-            case '-':
-                stackSymNum = 2;
-                break;
+                case '-':
+                    stackSymNum = 2;
+                    break;
 
-            case '*':
-                stackSymNum = 3;
-                break;
+                case '*':
+                    stackSymNum = 3;
+                    break;
 
-            case '/':
-                stackSymNum = 4;
-                break;
+                case '/':
+                    stackSymNum = 4;
+                    break;
 
-            case '(':
-                stackSymNum = 5;
-                break;
-            }
+                case '(':
+                    stackSymNum = 5;
+                    break;
+                }
 
-            switch (currentSym)
-            {
-            case '!':
-                currSymNum = 0;
-                break;
+                switch (currentSym)
+                {
+                case '!':
+                    currSymNum = 0;
+                    break;
 
-            case '+':
-                currSymNum = 1;
-                break;
+                case '+':
+                    currSymNum = 1;
+                    break;
 
-            case '-':
-                currSymNum = 2;
-                break;
+                case '-':
+                    currSymNum = 2;
+                    break;
 
-            case '*':
-                currSymNum = 3;
-                break;
+                case '*':
+                    currSymNum = 3;
+                    break;
 
-            case '/':
-                currSymNum = 4;
-                break;
+                case '/':
+                    currSymNum = 4;
+                    break;
 
-            case '(':
-                currSymNum = 5;
-                break;
+                case '(':
+                    currSymNum = 5;
+                    break;
 
-            case ')':
-                currSymNum = 6;
-                break;
+                case ')':
+                    currSymNum = 6;
+                    break;
             }
 
             int operationCode = arrRPN[stackSymNum][currSymNum];
 
             switch (operationCode)
             {
-            case 1:
-                pushStack(currentSym, &top);
-                i++;
-                break;
+                case 1:
+                    pushStack(currentSym, &top);
+                    i++;
+                    break;
 
-            case 2:
-                currentSym = popStack(&top);
-                result[pos] = currentSym;
-                pos++;
-                break;
+                case 2:
+                    currentSym = popStack(&top);
+                    result[pos] = currentSym;
+                    pos++;
+                    break;
 
-            case 3:
-                i++;
-                popStack(&top);
-                break;
+                case 3:
+                    i++;
+                    popStack(&top);
+                    break;
 
-            case 4:
-                result[pos] = '\0';
-                i++;
-                break;
+                case 4:
+                    result[pos] = '\0';
+                    i++;
+                    break;
 
-            case 5:
-                printf("Incorrectly balanced formula!");
-                strcpy(str, "?????\0");
-                break;
+                case 5:
+                    printf("Incorrectly balanced formula!");
+                    strcpy(str, "?????\0");
+                    break;
             }
         }
     }
@@ -685,7 +620,6 @@ void toReversePolishNotation(char *str, int length)
 
 void addAsmCommand(char *command, int operand)
 {
-    //printf("%s !", command);
     char stringNumber[3];
     char operandNumber[3];
 
@@ -721,8 +655,6 @@ void addAsmCommand(char *command, int operand)
     strcat(asmCommand, operandNumber);
     strcat(asmCommand, "\n");
     count_asm++;
-
-    //printf("AsmCommand: \n%s\n", asmCommand);
 }
 
 void calculate(char *expressionString, int length, char answerVariable)
@@ -767,29 +699,29 @@ void calculate(char *expressionString, int length, char answerVariable)
 
             switch (expressionString[i])
             {
-            case '+':
-                strcpy(tmp, "ADD");
-                addAsmCommand(tmp, var_arr[rightVarIndex].address);
-                var_arr[var_index].value = var_arr[leftVarIndex].value + var_arr[rightVarIndex].value;
-                break;
+                case '+':
+                    strcpy(tmp, "ADD");
+                    addAsmCommand(tmp, var_arr[rightVarIndex].address);
+                    var_arr[var_index].value = var_arr[leftVarIndex].value + var_arr[rightVarIndex].value;
+                    break;
 
-            case '-':
-                strcpy(tmp, "SUB");
-                addAsmCommand(tmp, var_arr[rightVarIndex].address);
-                var_arr[var_index].value = var_arr[leftVarIndex].value - var_arr[rightVarIndex].value;
-                break;
+                case '-':
+                    strcpy(tmp, "SUB");
+                    addAsmCommand(tmp, var_arr[rightVarIndex].address);
+                    var_arr[var_index].value = var_arr[leftVarIndex].value - var_arr[rightVarIndex].value;
+                    break;
 
-            case '*':
-                strcpy(tmp, "MUL");
-                addAsmCommand(tmp, var_arr[rightVarIndex].address);
-                var_arr[var_index].value = var_arr[leftVarIndex].value * var_arr[rightVarIndex].value;
-                break;
+                case '*':
+                    strcpy(tmp, "MUL");
+                    addAsmCommand(tmp, var_arr[rightVarIndex].address);
+                    var_arr[var_index].value = var_arr[leftVarIndex].value * var_arr[rightVarIndex].value;
+                    break;
 
-            case '/':
-                strcpy(tmp, "DIVIDE");
-                addAsmCommand(tmp, var_arr[rightVarIndex].address);
-                var_arr[var_index].value = var_arr[leftVarIndex].value / var_arr[rightVarIndex].value;
-                break;
+                case '/':
+                    strcpy(tmp, "DIVIDE");
+                    addAsmCommand(tmp, var_arr[rightVarIndex].address);
+                    var_arr[var_index].value = var_arr[leftVarIndex].value / var_arr[rightVarIndex].value;
+                    break;
             }
 
             strcpy(tmp, "STORE");
@@ -814,7 +746,6 @@ void let(char *str, int length)
 {
     parseLetString(str, length);
     length = strlen(str);
-    //    printf("%s\n", str);
 
     int i;
     char answerVariable = str[0];
@@ -829,11 +760,8 @@ void let(char *str, int length)
 
     length -= 2;
 
-    //    printf("%s\n", expressionString);
-
     toReversePolishNotation(expressionString, length);
     length = strlen(expressionString);
-    //    printf("%s\n", expressionString);
 
     if (length != 1)
     {
@@ -851,10 +779,6 @@ void let(char *str, int length)
         pos = var_arr[pos].address;
         addAsmCommand(var1, pos);
     }
-
-    //    deleteTempVars();
-
-    //    printf("Result AsmCommand:\n%s\n", asmCommand);
 }
 
 char *end(char *input_str)
