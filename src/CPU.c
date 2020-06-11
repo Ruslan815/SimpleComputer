@@ -56,7 +56,7 @@ int CU()
 	}
 
 	usleep(500000); // usecs
-	if ((command >= 0x30 && command <= 0x33) || command == 0x65 || command == 0x69)
+	if ((command >= 0x30 && command <= 0x33) || command == 0x69)
 	{
 		int statusALU = ALU(command, operand);
 
@@ -189,24 +189,6 @@ int CU()
 				return -1;
 				break;
 
-			case 0x55:
-
-				if (accumulator < 0)
-				{
-					break;
-				}
-
-				if (operand >= 0 && operand <= 99)
-				{
-					instructionCounter = operand;
-				}
-				else
-				{
-					sc_regSet(MEMORY_BORDER, 1);
-					return -1;
-				}
-				break;
-
 		}
 	}
 	
@@ -270,25 +252,6 @@ int ALU(int comand, int operand)
 			}
 
 			accumulator *= value;
-			break;
-		}
-		case 0x65:
-		{
-			if(accumulator < 0 || accumulator > 99) 
-			{
-				sc_regSet(MEMORY_BORDER, 1);
-				return -1;
-			}
-
-			sc_memoryGet(accumulator, &k);
-
-			if(k + value > 0x7FFF) 
-			{
-				sc_regSet(OVERFLOW, 1);
-				return -1;
-			}
-
-			accumulator = k + value;
 			break;
 		}
 		case 0x69:

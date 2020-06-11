@@ -525,10 +525,10 @@ void displayBigNumber(void)
 		}
 
 	}
-fflush(stdout);
+
+	fflush(stdout);
 	bc_box(13, 1, 10, 44);
 	printf("!!!");
-	
 
 	mt_gotoYX(23, 1);
 }
