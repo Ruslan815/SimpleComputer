@@ -34,7 +34,6 @@ const char command_arr[][7] = {"REM", "INPUT", "PRINT", "GOTO", "IF", "LET", "EN
 
 int count_asm = 0;
 int count_bas = 1;
-int var_count = 0;
 int var_adr = 99;
 char asmCommand[240];
 int bas_to_asm[10];
